@@ -47,12 +47,10 @@ object UserHolder {
     }
 
     fun registerUserByPhone(fullName: String, phone: String): User {
-        if (map.filter { it.value.login == phone.toNormalizedLogin() }
-                .isNotEmpty()) throw IllegalArgumentException("A user with this phone already exists")
-
         return User.makeUser(fullName = fullName, phone = phone).also { user ->
-            map[user.login] = user
-            println("registerUserByPhone, login = ${user.login}, user = $user")
+            map[user.login]
+                ?.let { throw IllegalArgumentException("A user with this phone already exists") }
+                ?: let { map[user.login] = user }
         }
     }
 

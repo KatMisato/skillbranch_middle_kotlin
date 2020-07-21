@@ -219,7 +219,7 @@ class User private constructor(
             return when {
                 """^\+\d((\d{3})|(\(\d{3}\)))\d{3}[-]?\d{2}[-]?\d{2}$""".toRegex()
                     .containsMatchIn(phone) -> true
-                else -> throw IllegalArgumentException("Enter a valid phone number starting with a + and containing 11 digits, not a $phone")
+                else -> throw IllegalArgumentException("Enter a valid phone number starting with a + and containing 11 digits")
             }
         }
 
