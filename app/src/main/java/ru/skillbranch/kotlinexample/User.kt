@@ -1,6 +1,7 @@
 package ru.skillbranch.kotlinexample
 
 import androidx.annotation.VisibleForTesting
+import ru.skillbranch.kotlinexample.UserHolder.toNormalizedLogin
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.SecureRandom
@@ -101,13 +102,9 @@ class User private constructor(
         check(!firstName.isBlank()) { "FirstName must be not blank" }
         check(!email.isNullOrBlank() || !rawPhone.isNullOrBlank()) { "Email or phone must be not blank" }
 
-        phone =
-            rawPhone?.replace(" ", "")?.replace("(", "")?.replace(")", "")?.replace("-", "")?.trim()
-                ?: rawPhone
+        phone = rawPhone?.toNormalizedLogin() ?: rawPhone
         if (email.isNullOrBlank()) {
-            checkPhone(
-                phone!!
-            )
+            checkPhone(phone!!)
         }
         login = email ?: phone!!
 
@@ -117,8 +114,8 @@ class User private constructor(
             login: $login
             fullName: $fullName
             initials: $initials
-            email: $email
-            phone: $phone
+            email: ${if(email.isNullOrBlank()) "null" else "$email"}
+            phone: ${if(phone.isNullOrBlank()) "null" else "$phone"}
             meta: $meta
             """.trimIndent()
 

@@ -54,7 +54,7 @@ object UserHolder {
         }
     }
 
-    private fun String.toNormalizedLogin(): String {
+    fun String.toNormalizedLogin(): String {
         return replace(" ", "").replace("(", "").replace(")", "").replace("-", "").trim()
     }
 }
