@@ -102,11 +102,13 @@ class User private constructor(
         check(!firstName.isBlank()) { "FirstName must be not blank" }
         check(!email.isNullOrBlank() || !rawPhone.isNullOrBlank()) { "Email or phone must be not blank" }
 
-        phone = rawPhone?.toNormalizedLogin() ?: rawPhone
-        if (email.isNullOrBlank()) {
+        phone = rawPhone?.toNormalizedLogin()
+        login = if (email.isNullOrBlank()) {
             checkPhone(phone!!)
+            phone!!
+        } else {
+            email
         }
-        login = email ?: phone!!
 
         userInfo = """
             firstName: $firstName
@@ -114,8 +116,8 @@ class User private constructor(
             login: $login
             fullName: $fullName
             initials: $initials
-            email: ${if(email.isNullOrBlank()) "null" else "$email"}
-            phone: ${if(phone.isNullOrBlank()) "null" else "$phone"}
+            email: ${if (email.isNullOrBlank()) "null" else "$email"}
+            phone: ${if (phone.isNullOrBlank()) "null" else "$phone"}
             meta: $meta
             """.trimIndent()
 
