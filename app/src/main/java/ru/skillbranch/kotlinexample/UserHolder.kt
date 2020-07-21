@@ -19,7 +19,6 @@ object UserHolder {
     @SuppressLint("NewApi")
     fun loginUser(login: String, password: String): String? {
         println("loginUser with $login $password, norm: ${login.toNormalizedLogin()}")
-        map.forEach { t, u -> println("$t $u") }
         return map[login.toNormalizedLogin()]?.run {
             if (checkPassword(password)) this.userInfo
             else null
@@ -35,6 +34,9 @@ object UserHolder {
         list.forEach { userString ->
             User.makeUser(userString).also { user ->
                 result.add(user)
+                if (!map.containsKey(user.login)) {
+                    map[user.login] = user
+                }
             }
         }
         return result

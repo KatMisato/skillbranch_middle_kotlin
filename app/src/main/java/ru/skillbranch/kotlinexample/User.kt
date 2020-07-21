@@ -21,7 +21,7 @@ class User private constructor(
         get() = listOfNotNull(firstName, lastName).map { it.first().toUpperCase() }
             .joinToString(" ").capitalize()
 
-    internal var phone: String? = null
+    private var phone: String? = null
         set(value) {
             field = value?.replace("[^+\\d]".toRegex(), "")
         }
@@ -36,7 +36,7 @@ class User private constructor(
 
     private var _salt: String? = null
     private val salt: String by lazy {
-        if( _salt == null ) ByteArray(16).also { SecureRandom().nextBytes(it) }.toString()
+        if (_salt == null) ByteArray(16).also { SecureRandom().nextBytes(it) }.toString()
         else _salt.toString()
     }
 
@@ -72,8 +72,14 @@ class User private constructor(
         rawPhone: String?,
         salt: String,
         passwordHash: String
-    ) : this(firstName, lastName, email = email, rawPhone = rawPhone, meta = mapOf("src" to "csv")) {
-        println("Secondary phone constructor")
+    ) : this(
+        firstName,
+        lastName,
+        email = email,
+        rawPhone = rawPhone,
+        meta = mapOf("src" to "csv")
+    ) {
+        println("Csv email constructor")
         this._salt = salt
         this.passwordHash = passwordHash
         changeAccessCode()
@@ -94,18 +100,17 @@ class User private constructor(
         println("First init block, primary constructor was called")
 
         check(!firstName.isBlank()) { "FirstName must be not blank" }
-        check(email.isNullOrBlank() || rawPhone.isNullOrBlank()) { "Email or phone must be not blank" }
+        check(!email.isNullOrBlank() || !rawPhone.isNullOrBlank()) { "Email or phone must be not blank" }
 
-        phone = rawPhone?.replace(" ", "")?.replace("(", "")?.replace(")", "")?.replace("-", "")?.trim() ?: rawPhone
-        phone = rawPhone
-        if(email.isNullOrBlank())
-        {
+        phone =
+            rawPhone?.replace(" ", "")?.replace("(", "")?.replace(")", "")?.replace("-", "")?.trim()
+                ?: rawPhone
+        if (email.isNullOrBlank()) {
             checkPhone(
                 phone!!
             )
         }
         login = email ?: phone!!
-        println("First init block, login = $login")
 
         userInfo = """
             firstName: $firstName
@@ -117,9 +122,14 @@ class User private constructor(
             phone: $phone
             meta: $meta
             """.trimIndent()
+
+        println("First init block, userInfo = $userInfo")
     }
 
-    fun checkPassword(pass: String) = encrypt(pass) == passwordHash
+    fun checkPassword(pass: String): Boolean {
+        println("checkPassword encrypt(pass) ${encrypt(pass)} passwordHash = $passwordHash, salt = $salt, _salt = $_salt")
+        return encrypt(pass) == passwordHash
+    }
 
     fun changePassword(oldPass: String, newPass: String) {
         if (checkPassword(oldPass)) passwordHash = encrypt(newPass)
@@ -174,39 +184,41 @@ class User private constructor(
         fun makeUser(
             csvString: String
         ): User {
+            println("Import user from string $csvString")
+
             val fields = csvString.split(";")
 
             val (firstName, lastName) = fields.first().fullNameToPair()
             val email = fields.getOrNull(1)
-            val (salt, passwordHash) = fields.getOrNull(2)?.saltHashToPair() ?: throw IllegalArgumentException("Salt and passwordHash must be not null or blank")
+            val (salt, passwordHash) = fields.getOrNull(2)?.saltHashToPair()
+                ?: throw IllegalArgumentException("Salt and passwordHash must be not null or blank")
             val phone = fields.getOrNull(3)
 
-            return when {
-                !phone.isNullOrBlank() -> {
-                    User(
-                        firstName,
-                        lastName,
-                        phone,
-                        email,
-                        salt,
-                        passwordHash
-                    )
-                }
-                !email.isNullOrBlank() && !salt.isNullOrBlank() && !passwordHash.isNullOrBlank() -> User(
-                    firstName,
-                    lastName,
-                    phone,
-                    email,
-                    salt,
-                    passwordHash
-                )
-                else -> throw IllegalArgumentException("Email or phone must be not null or blank")
-            }
+            println(
+                """Import user from $csvString
+                    firstName = $firstName
+                    lastName = $lastName
+                    email = $email
+                    salt = $salt
+                    passwordHash = $passwordHash
+                    phone = $phone
+                    """
+            )
+
+            return User(
+                firstName = firstName,
+                lastName = lastName,
+                rawPhone = phone,
+                email = email,
+                salt = salt,
+                passwordHash = passwordHash
+            )
         }
 
         private fun checkPhone(phone: String): Boolean {
             return when {
-                """^\+\d((\d{3})|(\(\d{3}\)))\d{3}[-]?\d{2}[-]?\d{2}$""".toRegex().containsMatchIn(phone) -> true
+                """^\+\d((\d{3})|(\(\d{3}\)))\d{3}[-]?\d{2}[-]?\d{2}$""".toRegex()
+                    .containsMatchIn(phone) -> true
                 else -> throw IllegalArgumentException("Enter a valid phone number starting with a + and containing 11 digits, not a $phone")
             }
         }
@@ -241,5 +253,3 @@ class User private constructor(
         }
     }
 }
-
-
