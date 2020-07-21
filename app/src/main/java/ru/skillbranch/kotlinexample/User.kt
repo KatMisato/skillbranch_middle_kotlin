@@ -100,7 +100,9 @@ class User private constructor(
         phone = rawPhone
         if(email.isNullOrBlank())
         {
-            checkPhone(phone!!)
+            checkPhone(
+                phone!!
+            )
         }
         login = email ?: phone!!
         println("First init block, login = $login")
@@ -153,7 +155,11 @@ class User private constructor(
             val (firstName, lastName) = fullName.fullNameToPair()
             return when {
                 !phone.isNullOrBlank() -> {
-                    User(firstName, lastName, phone)
+                    User(
+                        firstName,
+                        lastName,
+                        phone
+                    )
                 }
                 !email.isNullOrBlank() && !password.isNullOrBlank() -> User(
                     firstName,
@@ -177,7 +183,14 @@ class User private constructor(
 
             return when {
                 !phone.isNullOrBlank() -> {
-                    User(firstName, lastName, phone, email, salt, passwordHash)
+                    User(
+                        firstName,
+                        lastName,
+                        phone,
+                        email,
+                        salt,
+                        passwordHash
+                    )
                 }
                 !email.isNullOrBlank() && !salt.isNullOrBlank() && !passwordHash.isNullOrBlank() -> User(
                     firstName,
