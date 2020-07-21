@@ -82,7 +82,6 @@ class User private constructor(
         println("Csv email constructor")
         this._salt = salt
         this.passwordHash = passwordHash
-        changeAccessCode()
     }
 
     private fun generateAccessCode(): String {
