@@ -48,15 +48,15 @@ class ArticleViewModel(private val articleId: String) :
         }
     }
 
-    private fun getArticleContent(): LiveData<List<Any>?> {
+    fun getArticleContent(): LiveData<List<Any>?> {
         return repository.loadArticleContent(articleId)
     }
 
-    private fun getArticleData(): LiveData<ArticleData?> {
+    fun getArticleData(): LiveData<ArticleData?> {
         return repository.getArticle(articleId)
     }
 
-    private fun getArticlePersonalInfo(): LiveData<ArticlePersonalInfo?> {
+    fun getArticlePersonalInfo(): LiveData<ArticlePersonalInfo?> {
         return repository.loadArticlePersonalInfo(articleId)
     }
 
@@ -90,7 +90,16 @@ class ArticleViewModel(private val articleId: String) :
     }
 
     fun handleBookmark() {
-
+        val toggleBookmark = {
+            val info = currentState.toArticlePersonalInfo()
+            repository.updateArticlePersonalInfo(info.copy(isBookmark = !info.isBookmark))
+        }
+        toggleBookmark()
+        val msg = if (currentState.isLike) Notify.TextMessage("Add to bookmarks")
+        else {
+            Notify.TextMessage("Remove from bookmarks")
+        }
+        notify(msg)
     }
 
     fun handleShare() {
@@ -100,5 +109,13 @@ class ArticleViewModel(private val articleId: String) :
 
     fun handleToggleMenu() {
         updateState { it.copy(isShowMenu = !it.isShowMenu) }
+    }
+
+    fun handleSearchMode(isSearch: Boolean) {
+        updateState { it.copy(isSearch = isSearch) }
+    }
+
+    fun handleSearch(query: String?) {
+        updateState { it.copy(searchQuery = query) }
     }
 }

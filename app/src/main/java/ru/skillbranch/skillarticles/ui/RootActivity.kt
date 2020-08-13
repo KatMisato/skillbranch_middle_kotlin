@@ -1,10 +1,14 @@
 package ru.skillbranch.skillarticles.ui
 
+import android.app.SearchManager
+import android.content.Context
 import android.os.Bundle
+import android.view.Menu
 import android.widget.ImageView
 import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_root.*
@@ -46,7 +50,7 @@ class RootActivity : AppCompatActivity() {
             }
             is Notify.ActionMessage -> {
                 with(snackbar) {
-                    setActionTextColor(getColor(ru.skillbranch.skillarticles.R.color.color_accent_dark))
+                    setActionTextColor(getColor(R.color.color_accent_dark))
                     setAction(notify.actionLabel) {
                         notify.actionHandler?.invoke()
                     }
@@ -117,8 +121,53 @@ class RootActivity : AppCompatActivity() {
         lp?.let {
             it.width = this.dpToIntPx(40)
             it.height = this.dpToIntPx(40)
-            it.marginEnd = this.dpToIntPx(40)
+            it.marginEnd = this.dpToIntPx(16)
             logo.layoutParams = it
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_search, menu)
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        (menu?.findItem(R.id.action_search)?.actionView as SearchView).apply {
+            setSearchableInfo(searchManager.getSearchableInfo(componentName))
+        }
+
+        val menuItem = menu.findItem(R.id.action_search)
+        val searchView = menuItem?.actionView as? SearchView
+
+        menuItem?.expandActionView()
+        viewModel.handleSearchMode(true)
+
+        searchView?.onActionViewExpanded()
+
+        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                searchView.clearFocus()
+                viewModel.handleSearch(query)
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                searchView.clearFocus()
+                viewModel.handleSearch(newText)
+                return false
+            }
+
+        })
+
+        searchView?.setOnQueryTextFocusChangeListener { _, hasFocus ->
+            if(!hasFocus) {
+                viewModel.handleSearchMode(false)
+            }
+        }
+
+        if(viewModel.currentState.isSearch) {
+            menuItem?.expandActionView()
+            searchView?.onActionViewExpanded()
+            searchView?.setQuery(viewModel.currentState.searchQuery, true)
+        }
+
+        return super.onCreateOptionsMenu(menu)
     }
 }

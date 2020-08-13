@@ -6,11 +6,10 @@
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="android:statusBarColor">@color/color_primary_dark</item>
-
         <item name="android:textColorSecondary">@color/color_accent</item>
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryVariant">@color/color_primary_dark</item>
-        <item name="colorOnPrimary">@color/color_on_article_bar</item>
+        <item name="colorOnPrimary">@android:color/white</item>
         <item name="colorSecondary">@color/color_accent</item>
         <item name="colorSecondaryVariant">@color/color_accent_dark</item>
         <item name="colorOnSecondary">@android:color/white</item>
@@ -20,6 +19,7 @@
         <item name="colorOnSurface">@color/color_on_surface</item>
 
         <item name="snackbarStyle">@style/CustomSnackbar</item>
+        <item name="searchViewStyle">@style/ArticleToolbar</item>
     </style>
 
     <style name="ArticleBarsTheme" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar">
