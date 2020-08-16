@@ -9,41 +9,44 @@ import ru.skillbranch.skillarticles.extensions.data.toArticlePersonalInfo
 import ru.skillbranch.skillarticles.extensions.format
 
 class ArticleViewModel(private val articleId: String) :
-    BaseViewModel<ArticleState>(ArticleState()) {
+        BaseViewModel<ArticleState>(ArticleState()) {
     private val repository = ArticleRepository
+    private var menuIsShown = false
 
     init {
         subscribeOnDataSource(getArticleData()) { article, state ->
             article ?: return@subscribeOnDataSource null
             state.copy(
-                shareLink = article.shareLink,
-                title = article.title,
-                category = article.category,
-                categoryIcon = article.categoryIcon,
-                date = article.date.format()
+                    shareLink = article.shareLink,
+                    title = article.title,
+                    category = article.category,
+                    categoryIcon = article.categoryIcon,
+                    date = article.date.format()
             )
         }
 
         subscribeOnDataSource(getArticleContent()) { content, state ->
             content ?: return@subscribeOnDataSource null
             state.copy(
-                isLoadingContent = false,
-                content = content
+                    isLoadingContent = false,
+                    content = content
             )
         }
 
         subscribeOnDataSource(getArticlePersonalInfo()) { info, state ->
             info ?: return@subscribeOnDataSource null
             state.copy(
-                isBookmark = info.isBookmark,
-                isLike = info.isLike
+                    isBookmark = info.isBookmark,
+                    isLike = info.isLike
             )
         }
 
         subscribeOnDataSource(repository.getAppSettings()) { settings, state ->
             state.copy(
-                isDarkMode = settings.isDarkMode,
-                isBigText = settings.isBigText
+                    isDarkMode = settings.isDarkMode,
+                    isBigText = settings.isBigText,
+                    isSearch = settings.isSearch,
+                    searchQuery = settings.searchQuery
             )
         }
     }
@@ -82,24 +85,19 @@ class ArticleViewModel(private val articleId: String) :
         val msg = if (currentState.isLike) Notify.TextMessage("Mark is liked")
         else {
             Notify.ActionMessage(
-                "Don't like it anymore", "No, still like it",
-                toggleLike
+                    "Don't like it anymore", "No, still like it",
+                    toggleLike
             )
         }
         notify(msg)
     }
 
     fun handleBookmark() {
-        val toggleBookmark = {
-            val info = currentState.toArticlePersonalInfo()
-            repository.updateArticlePersonalInfo(info.copy(isBookmark = !info.isBookmark))
-        }
-        toggleBookmark()
-        val msg = if (currentState.isLike) Notify.TextMessage("Add to bookmarks")
-        else {
-            Notify.TextMessage("Remove from bookmarks")
-        }
-        notify(msg)
+        val info = currentState.toArticlePersonalInfo()
+        repository.updateArticlePersonalInfo(info.copy(isBookmark = !info.isBookmark))
+
+        val msg = if (currentState.isBookmark) "Add to bookmarks" else "Remove from bookmarks"
+        notify(Notify.TextMessage(msg))
     }
 
     fun handleShare() {
@@ -108,14 +106,24 @@ class ArticleViewModel(private val articleId: String) :
     }
 
     fun handleToggleMenu() {
-        updateState { it.copy(isShowMenu = !it.isShowMenu) }
+        updateState { state ->
+            state.copy(isShowMenu = !state.isShowMenu).also { menuIsShown = !state.isShowMenu }
+        }
     }
 
     fun handleSearchMode(isSearch: Boolean) {
-        updateState { it.copy(isSearch = isSearch) }
+        repository.updateSettings(currentState.toAppSettings().copy(isSearch = isSearch))
     }
 
     fun handleSearch(query: String?) {
-        updateState { it.copy(searchQuery = query) }
+        repository.updateSettings(currentState.toAppSettings().copy(searchQuery = query))
+    }
+
+    fun hideMenu() {
+        updateState { it.copy(isShowMenu = false) }
+    }
+
+    fun showMenu() {
+        updateState { it.copy(isShowMenu = menuIsShown) }
     }
 }
