@@ -1,12 +1,11 @@
-package ru.skillbranch.skillarticles.viewmodels
+package ru.skillbranch.skillarticles.viewmodels.base
 
 import android.os.Bundle
 import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.*
-import ru.skillbranch.skillarticles.viewmodels.base.IViewModelState
 
-abstract class BaseViewModel<T: IViewModelState>(initState: T) : ViewModel() {
+abstract class BaseViewModel<T : IViewModelState>(initState: T) : ViewModel() {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     val notifications = MutableLiveData<Event<Notify>>()
 
@@ -62,7 +61,8 @@ abstract class BaseViewModel<T: IViewModelState>(initState: T) : ViewModel() {
      * реализует данное поведение с помощью EventObserver
      */
     fun observeNotifications(owner: LifecycleOwner, onNotify: (notification: Notify) -> Unit) {
-        notifications.observe(owner, EventObserver { onNotify(it) })
+        notifications.observe(owner,
+            EventObserver { onNotify(it) })
     }
 
     /***
@@ -79,14 +79,15 @@ abstract class BaseViewModel<T: IViewModelState>(initState: T) : ViewModel() {
         }
     }
 
-    fun saveState(outState: Bundle) {
+    fun saveState(outState: Bundle){
         currentState.save(outState)
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun restoreState(savedState: Bundle) {
+    fun restoreState(savedState:Bundle){
         state.value = currentState.restore(savedState) as T
     }
+
 }
 
 class Event<out E>(private val content: E) {
@@ -127,7 +128,7 @@ sealed class Notify(val message: String) {
     data class ActionMessage(
         val msg: String,
         val actionLabel: String,
-        val actionHandler: (() -> Unit)?
+        val actionHandler: (() -> Unit)
     ) : Notify(msg)
 
     data class ErrorMessage(
