@@ -87,7 +87,9 @@ class BottombarBehavior : CoordinatorLayout.Behavior<Bottombar>() {
             ev: MotionEvent
     ): Boolean {
         //delegate handle touch event to drag helper
-        dragHelper.processTouchEvent(ev)
+        if (::dragHelper.isInitialized) {
+            dragHelper.processTouchEvent(ev)
+        }
         return true
     }
 

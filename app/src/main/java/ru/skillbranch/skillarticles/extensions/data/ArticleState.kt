@@ -5,7 +5,7 @@ import ru.skillbranch.skillarticles.data.ArticlePersonalInfo
 import ru.skillbranch.skillarticles.viewmodels.ArticleState
 
 fun ArticleState.toAppSettings(): AppSettings {
-    return AppSettings(isDarkMode, isBigText, isSearch, searchQuery)
+    return AppSettings(isDarkMode, isBigText)
 }
 
 fun ArticleState.toArticlePersonalInfo(): ArticlePersonalInfo {

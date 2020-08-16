@@ -44,9 +44,7 @@ class ArticleViewModel(private val articleId: String) :
         subscribeOnDataSource(repository.getAppSettings()) { settings, state ->
             state.copy(
                     isDarkMode = settings.isDarkMode,
-                    isBigText = settings.isBigText,
-                    isSearch = settings.isSearch,
-                    searchQuery = settings.searchQuery
+                    isBigText = settings.isBigText
             )
         }
     }
@@ -112,19 +110,15 @@ class ArticleViewModel(private val articleId: String) :
     }
 
     fun handleSearchMode(isSearch: Boolean) {
-        repository.updateSettings(currentState.toAppSettings().copy(isSearch = isSearch))
+        updateState { state ->
+            state.copy(isSearch = isSearch)
+        }
     }
 
     fun handleSearch(query: String?) {
-        repository.updateSettings(currentState.toAppSettings().copy(searchQuery = query))
-    }
-
-    fun hideMenu() {
-        updateState { it.copy(isShowMenu = false) }
-    }
-
-    fun showMenu() {
-        updateState { it.copy(isShowMenu = menuIsShown) }
+        updateState { state ->
+            state.copy(searchQuery = query)
+        }
     }
 }
 

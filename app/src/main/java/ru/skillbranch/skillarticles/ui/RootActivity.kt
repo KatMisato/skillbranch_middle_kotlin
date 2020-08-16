@@ -153,9 +153,10 @@ class RootActivity : AppCompatActivity() {
 
         })
 
-        searchView?.setOnCloseListener {
-            viewModel.handleSearchMode(false)
-            false
+        searchView?.setOnQueryTextFocusChangeListener { _, hasFocus ->
+            if(!hasFocus) {
+                viewModel.handleSearchMode(false)
+            }
         }
 
         if (viewModel.currentState.isSearch) {
