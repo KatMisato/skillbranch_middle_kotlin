@@ -1,9 +1,11 @@
 package ru.skillbranch.skillarticles.extensions
 
-import java.text.SimpleDateFormat
-import java.util.*
-
-fun String.indexesOf(pattern: String): List<Pair<Int, Int>> {
-    val dateFormat = SimpleDateFormat(pattern, Locale("ru"))
-    return dateFormat.format(this)
+fun String?.indexesOf(substr: String, ignoreCase: Boolean = true): List<Int> {
+    if (substr.isEmpty()) {
+        return emptyList()
+    }
+    return this?.let {
+        val regex = if (ignoreCase) Regex(substr, RegexOption.IGNORE_CASE) else Regex(substr)
+        regex.findAll(this).map { it.range.first }.toList()
+    } ?: emptyList()
 }

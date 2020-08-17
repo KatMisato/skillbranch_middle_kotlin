@@ -21,10 +21,11 @@
             app:layout_scrollFlags="scroll|enterAlwaysCollapsed"
             app:logo="@drawable/logo_placeholder"
             app:subtitle="loading..."
-            app:title="@string/app_name"/>
+            app:title="@string/app_name" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
@@ -45,10 +46,10 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:elevation="8dp"
-        android:visibility="gone"
-        tools:visibility="visible"
         android:theme="@style/ArticleBarsTheme"
-        app:layout_dodgeInsetEdges="bottom" />
+        android:visibility="gone"
+        app:layout_dodgeInsetEdges="bottom"
+        tools:visibility="visible" />
 
     <ru.skillbranch.skillarticles.ui.custom.Bottombar
         android:id="@+id/bottombar"

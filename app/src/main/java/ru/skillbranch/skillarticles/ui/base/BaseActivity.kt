@@ -7,9 +7,9 @@ import ru.skillbranch.skillarticles.viewmodels.base.IViewModelState
 import ru.skillbranch.skillarticles.viewmodels.base.Notify
 
 abstract class BaseActivity<T : BaseViewModel<out IViewModelState>> : AppCompatActivity() {
-    protected abstract val binding:Binding
-    protected abstract val viewModel : T
-    protected abstract val layout:Int
+    protected abstract val binding: Binding
+    protected abstract val viewModel: T
+    protected abstract val layout: Int
 
     //set listeners, tuning views
     abstract fun setupViews()
@@ -20,8 +20,8 @@ abstract class BaseActivity<T : BaseViewModel<out IViewModelState>> : AppCompatA
         setContentView(layout)
         setupViews()
         binding.onFinishInflate()
-        viewModel.observeState(this){binding.bind(it)}
-        viewModel.observeNotifications(this){renderNotification(it)}
+        viewModel.observeState(this) { binding.bind(it) }
+        viewModel.observeNotifications(this) { renderNotification(it) }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -10,7 +10,9 @@ import ru.skillbranch.skillarticles.extensions.data.toAppSettings
 import ru.skillbranch.skillarticles.extensions.data.toArticlePersonalInfo
 import ru.skillbranch.skillarticles.extensions.format
 import ru.skillbranch.skillarticles.extensions.indexesOf
+import ru.skillbranch.skillarticles.viewmodels.base.BaseViewModel
 import ru.skillbranch.skillarticles.viewmodels.base.IViewModelState
+import ru.skillbranch.skillarticles.viewmodels.base.Notify
 
 class ArticleViewModel(private val articleId: String) :
         BaseViewModel<ArticleState>(ArticleState()), IArticleViewModel {
@@ -139,23 +141,23 @@ class ArticleViewModel(private val articleId: String) :
 }
 
 data class ArticleState(
-        val isAuth: Boolean = false, // пользователь авторизован
-        val isLoadingContent: Boolean = true, // контент загружается
-        val isLoadingReviews: Boolean = true, // отзывы загружается
-        val isLike: Boolean = false, // отмечено как Like
-        val isBookmark: Boolean = false, // в закладках
-        val isShowMenu: Boolean = false, // отображается меню
-        val isBigText: Boolean = false, // шрифт увеличен
-        val isDarkMode: Boolean = false, // темный режим
-        val isSearch: Boolean = false, // режим поиска
-        val searchQuery: String? = null, // поисковый запрос
-        val searchResults: List<Pair<Int, Int>> = emptyList(), // результаты поиска (стартовая и конечная позиции)
-        val searchPosition: Int = 0, // текущая позиция найденного результата
-        val shareLink: String? = null, // ссылка Share
-        val title: String? = null, // заголовок статьи
-        val category: String? = null, // категория
-        val categoryIcon: Any? = null, // иконка категории
-        val date: String? = null, // дата публикации
+        val isAuth: Boolean = false,
+        val isLoadingContent: Boolean = true,
+        val isLoadingReviews: Boolean = true,
+        val isLike: Boolean = false,
+        val isBookmark: Boolean = false,
+        val isShowMenu: Boolean = false,
+        val isBigText: Boolean = false,
+        val isDarkMode: Boolean = false,
+        val isSearch: Boolean = false,
+        val searchQuery: String? = null,
+        val searchResults: List<Pair<Int, Int>> = emptyList(),
+        val searchPosition: Int = 0,
+        val shareLink: String? = null,
+        val title: String? = null,
+        val category: String? = null,
+        val categoryIcon: Any? = null,
+        val date: String? = null,
         val author: Any? = null,
         val poster: String? = null,
         val content: List<Any> = emptyList(),
@@ -163,18 +165,22 @@ data class ArticleState(
 ) : IViewModelState {
     override fun save(outState: Bundle) {
         outState.putAll(
-                bundleOf("isSearch" to isSearch,
+                bundleOf(
+                        "isSearch" to isSearch,
                         "searchQuery" to searchQuery,
                         "searchResults" to searchResults,
-                        "searchPosition" to searchPosition)
+                        "searchPosition" to searchPosition
+                )
         )
     }
 
     override fun restore(savedState: Bundle): IViewModelState {
-        return copy(isSearch = savedState["isSearch"] as Boolean,
+        return copy(
+                isSearch = savedState["isSearch"] as Boolean,
                 searchQuery = savedState["searchQuery"] as? String,
                 searchResults = savedState["searchResults"] as List<Pair<Int, Int>>,
                 searchPosition = savedState["searchPosition"] as Int
         )
     }
 }
+

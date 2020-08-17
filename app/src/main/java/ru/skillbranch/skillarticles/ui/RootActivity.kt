@@ -15,6 +15,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.text.getSpans
 import androidx.core.view.isVisible
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_root.*
@@ -23,6 +24,7 @@ import kotlinx.android.synthetic.main.layout_submenu.*
 import kotlinx.android.synthetic.main.search_view_layout.*
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
+import ru.skillbranch.skillarticles.extensions.setMarginOptionally
 import ru.skillbranch.skillarticles.ui.base.BaseActivity
 import ru.skillbranch.skillarticles.ui.base.Binding
 import ru.skillbranch.skillarticles.ui.custom.SearchFocusSpan
@@ -33,8 +35,9 @@ import ru.skillbranch.skillarticles.ui.delegates.RenderProp
 import ru.skillbranch.skillarticles.viewmodels.ArticleState
 import ru.skillbranch.skillarticles.viewmodels.ArticleViewModel
 import ru.skillbranch.skillarticles.viewmodels.base.Notify
-import ru.skillbranch.skillarticles.viewmodels.ViewModelFactory
 import ru.skillbranch.skillarticles.viewmodels.base.IViewModelState
+import ru.skillbranch.skillarticles.viewmodels.base.ViewModelDelegate
+import ru.skillbranch.skillarticles.viewmodels.base.ViewModelFactory
 
 class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
     override val layout: Int = R.layout.activity_root
@@ -42,6 +45,10 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
     override val viewModel: ArticleViewModel by lazy {
         val vmFactory = ViewModelFactory("0")
         ViewModelProviders.of(this, vmFactory).get(ArticleViewModel::class.java)
+    }
+
+    internal inline fun <reified T: ViewModel> provideViewModel(arg : Any?) : ViewModelDelegate<T> {
+        return ViewModelDelegate(T::class.java, arg)
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
@@ -116,8 +123,7 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
 
         if (binding.isSearch) {
             menuItem?.expandActionView()
-            searchView?.setQuery(viewModel.currentState.searchQuery, true)
-
+            searchView?.setQuery(binding.searchQuery, true)
             if (binding.isFocusedSearch) searchView?.requestFocus()
             else searchView?.clearFocus()
         }

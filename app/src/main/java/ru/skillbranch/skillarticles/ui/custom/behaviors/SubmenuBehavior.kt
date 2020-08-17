@@ -11,18 +11,18 @@ class SubmenuBehavior : CoordinatorLayout.Behavior<ArticleSubmenu>() {
 
     //set view as dependent on bottombar
     override fun layoutDependsOn(
-        parent: CoordinatorLayout,
-        child: ArticleSubmenu,
-        dependency: View
+            parent: CoordinatorLayout,
+            child: ArticleSubmenu,
+            dependency: View
     ): Boolean {
         return dependency is Bottombar
     }
 
     //will be called if dependent view has been changed
     override fun onDependentViewChanged(
-        parent: CoordinatorLayout,
-        child: ArticleSubmenu,
-        dependency: View
+            parent: CoordinatorLayout,
+            child: ArticleSubmenu,
+            dependency: View
     ): Boolean {
         return if (child.isOpen && dependency is Bottombar && dependency.translationY >= 0) {
             animate(child, dependency)
