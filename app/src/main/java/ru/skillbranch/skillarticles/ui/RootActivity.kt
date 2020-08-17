@@ -47,10 +47,6 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
         ViewModelProviders.of(this, vmFactory).get(ArticleViewModel::class.java)
     }
 
-    internal inline fun <reified T: ViewModel> provideViewModel(arg : Any?) : ViewModelDelegate<T> {
-        return ViewModelDelegate(T::class.java, arg)
-    }
-
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public override val binding: ArticleBinding by lazy { ArticleBinding() }
 
@@ -199,12 +195,12 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
         btn_settings.setOnClickListener { viewModel.handleToggleMenu() }
 
         btn_result_up.setOnClickListener {
-            if (search_view.hasFocus()) search_view.clearFocus()
+            if (search_view != null && search_view.hasFocus()) search_view.clearFocus()
             viewModel.handleUpResult()
         }
 
         btn_result_down.setOnClickListener {
-            if (search_view.hasFocus()) search_view.clearFocus()
+            if (search_view != null && search_view.hasFocus()) search_view.clearFocus()
             viewModel.handleDownResult()
         }
 
