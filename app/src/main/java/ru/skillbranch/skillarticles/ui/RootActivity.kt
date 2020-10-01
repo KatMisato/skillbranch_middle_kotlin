@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.text.Selection
 import android.text.Spannable
 import android.text.SpannableString
-import android.text.method.ScrollingMovementMethod
+import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
@@ -15,7 +15,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.text.getSpans
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_root.*
@@ -25,6 +24,7 @@ import kotlinx.android.synthetic.main.search_view_layout.*
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
 import ru.skillbranch.skillarticles.extensions.setMarginOptionally
+import ru.skillbranch.skillarticles.markdown.MarkdownBuilder
 import ru.skillbranch.skillarticles.ui.base.BaseActivity
 import ru.skillbranch.skillarticles.ui.base.Binding
 import ru.skillbranch.skillarticles.ui.custom.SearchFocusSpan
@@ -34,8 +34,8 @@ import ru.skillbranch.skillarticles.ui.delegates.ObserveProp
 import ru.skillbranch.skillarticles.ui.delegates.RenderProp
 import ru.skillbranch.skillarticles.viewmodels.ArticleState
 import ru.skillbranch.skillarticles.viewmodels.ArticleViewModel
-import ru.skillbranch.skillarticles.viewmodels.base.Notify
 import ru.skillbranch.skillarticles.viewmodels.base.IViewModelState
+import ru.skillbranch.skillarticles.viewmodels.base.Notify
 import ru.skillbranch.skillarticles.viewmodels.base.ViewModelFactory
 
 class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
@@ -68,10 +68,10 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
 
         searchResult.forEach { (start, end) ->
             content.setSpan(
-                    SearchSpan(bgColor, fgColor),
-                    start,
-                    end,
-                    SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
+                SearchSpan(bgColor, fgColor),
+                start,
+                end,
+                SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
             )
         }
 
@@ -87,10 +87,10 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
             val result = spans[searchPosition]
             Selection.setSelection(content, content.getSpanStart(result))
             content.setSpan(
-                    SearchFocusSpan(bgColor, fgColor),
-                    content.getSpanStart(result),
-                    content.getSpanEnd(result),
-                    SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
+                SearchFocusSpan(bgColor, fgColor),
+                content.getSpanStart(result),
+                content.getSpanEnd(result),
+                SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
             )
         }
     }
@@ -154,7 +154,7 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
 
     override fun renderNotification(notify: Notify) {
         val snackbar = Snackbar.make(coordinator_container, notify.message, Snackbar.LENGTH_LONG)
-                .setAnchorView(bottombar)
+            .setAnchorView(bottombar)
 
         when (notify) {
             is Notify.TextMessage -> {
@@ -195,11 +195,13 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
 
         btn_result_up.setOnClickListener {
             if (search_view != null && search_view.hasFocus()) search_view.clearFocus()
+            if (!tv_text_content.hasFocus()) tv_text_content.requestFocus()
             viewModel.handleUpResult()
         }
 
         btn_result_down.setOnClickListener {
             if (search_view != null && search_view.hasFocus()) search_view.clearFocus()
+            if (!tv_text_content.hasFocus()) tv_text_content.requestFocus()
             viewModel.handleDownResult()
         }
 
@@ -237,7 +239,9 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
         }
         private var title: String by RenderProp("loading") { toolbar.title = it }
         private var category: String by RenderProp("loading") { toolbar.subtitle = it }
-        private var categoryIcon: Int by RenderProp(R.drawable.logo_placeholder) { toolbar.logo = getDrawable(it) }
+        private var categoryIcon: Int by RenderProp(R.drawable.logo_placeholder) {
+            toolbar.logo = getDrawable(it)
+        }
 
         private var isBigText: Boolean by RenderProp(false) {
             if (it) {
@@ -265,16 +269,19 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
         private var searchPosition: Int by ObserveProp(0)
 
         private var content: String by ObserveProp("loading") {
-            tv_text_content.setText(it, TextView.BufferType.SPANNABLE)
-            tv_text_content.movementMethod = ScrollingMovementMethod()
+            MarkdownBuilder(this@RootActivity).markdownToSpan(it).run {
+                tv_text_content.setText(this, TextView.BufferType.SPANNABLE)
+            }
+            tv_text_content.movementMethod = LinkMovementMethod.getInstance()
+            //ScrollingMovementMethod()
         }
 
         override fun onFinishInflate() {
             dependsOn<Boolean, Boolean, List<Pair<Int, Int>>, Int>(
-                    ::isLoadingContent,
-                    ::isSearch,
-                    ::searchResults,
-                    ::searchPosition
+                ::isLoadingContent,
+                ::isSearch,
+                ::searchResults,
+                ::searchPosition
             ) { ilc, iss, sr, sp ->
                 if (!ilc && iss) {
                     renderSearchResult(sr)
@@ -299,7 +306,7 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
             if (data.title != null) title = data.title
             if (data.category != null) category = data.category
             if (data.categoryIcon != null) categoryIcon = data.categoryIcon as Int
-            if (data.content.isNotEmpty()) content = data.content.first() as String
+            if (data.content != null) content = data.content
 
             isLoadingContent = data.isLoadingContent
             isSearch = data.isSearch
