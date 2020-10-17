@@ -129,6 +129,18 @@ class MarkdownBuilder(
                         }
                     }
                 }
+                is Element.OrderedListItem -> {
+                    inSpans(OrderedListSpan(gap, element.order, colorSecondary)) {
+                        for (child in element.elements) {
+                            buildElement(child, builder)
+                        }
+                    }
+                }
+                is Element.BlockCode -> {
+                    inSpans(BlockCodeSpan(colorOnSurface, colorSurface, cornerRadius, gap, element.type)) {
+                        append(element.text)
+                    }
+                }
                 else -> append(element.text)
             }
         }
