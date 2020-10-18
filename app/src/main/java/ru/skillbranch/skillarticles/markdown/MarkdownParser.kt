@@ -14,7 +14,7 @@ object MarkdownParser {
     private const val RULE_GROUP = "(^[-_*]{3}$)"
     private const val INLINE_GROUP = "((?<!`)`[^`\\s].*?[`\\s]?`(?!`))"
     private const val LINK_GROUP = "(\\[[^\\[\\]]*?]\\(.+?\\)|^\\[*?]\\(.*?\\))"
-    private const val ORDERED_LIST_ITEM_GROUP = "(^\\d{1,2}\\.\\.s.+?$)"
+    private const val ORDERED_LIST_ITEM_GROUP = "(^\\d{1,2}\\.\\s.+?$)"
     private const val BLOCK_CODE_GROUP = "(^```[\\s\\S]+?```$)"
 
 
@@ -202,7 +202,6 @@ object MarkdownParser {
                 11 -> {
                     // text without "```{}```"
                     text = string.subSequence(startIndex.plus(3), endIndex.plus(-3)).toString()
-                   // val element = Element.BlockCode(text)
                     if (text.contains(LINE_SEPARATOR)) {
                         for ((index, line) in text.lines().withIndex()) {
                             when (index) {
@@ -220,7 +219,6 @@ object MarkdownParser {
                     } else {
                         parents.add(Element.BlockCode(Element.BlockCode.Type.SINGLE, text))
                     }
-                    //parents.add(element)
                     lastStartIndex = endIndex
                 }
             }
@@ -311,7 +309,7 @@ sealed class Element {
     ) : Element()
 
     data class BlockCode(
-            val type: Type,
+            val type: Type = Type.MIDDLE,
             override val text: CharSequence,
             override val elements: List<Element> = emptyList()
     ) : Element() {

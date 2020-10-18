@@ -74,8 +74,6 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
                 SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
             )
         }
-
-        renderSearchPosition(0)
     }
 
     override fun renderSearchPosition(searchPosition: Int) {
