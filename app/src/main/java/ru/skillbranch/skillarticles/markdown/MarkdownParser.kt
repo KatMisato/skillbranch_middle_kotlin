@@ -81,7 +81,7 @@ object MarkdownParser {
 
             var text: CharSequence
 
-            val groups = 1..9
+            val groups = 1..11
             var group = -1
 
             for (gr in groups) {
@@ -202,8 +202,25 @@ object MarkdownParser {
                 11 -> {
                     // text without "```{}```"
                     text = string.subSequence(startIndex.plus(3), endIndex.plus(-3)).toString()
-                    val element = Element.BlockCode(text)
-                    parents.add(element)
+                   // val element = Element.BlockCode(text)
+                    if (text.contains(LINE_SEPARATOR)) {
+                        for ((index, line) in text.lines().withIndex()) {
+                            when (index) {
+                                text.lines().lastIndex -> parents.add(
+                                        Element.BlockCode(Element.BlockCode.Type.END, line)
+                                )
+                                0 -> parents.add(
+                                        Element.BlockCode(Element.BlockCode.Type.START, line + LINE_SEPARATOR)
+                                )
+                                else -> parents.add(
+                                        Element.BlockCode(Element.BlockCode.Type.MIDDLE, line + LINE_SEPARATOR)
+                                )
+                            }
+                        }
+                    } else {
+                        parents.add(Element.BlockCode(Element.BlockCode.Type.SINGLE, text))
+                    }
+                    //parents.add(element)
                     lastStartIndex = endIndex
                 }
             }
@@ -294,6 +311,7 @@ sealed class Element {
     ) : Element()
 
     data class BlockCode(
+            val type: Type,
             override val text: CharSequence,
             override val elements: List<Element> = emptyList()
     ) : Element() {
