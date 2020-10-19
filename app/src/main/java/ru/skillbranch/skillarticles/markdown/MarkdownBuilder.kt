@@ -123,10 +123,7 @@ class MarkdownBuilder(
                         URLSpan(element.link)
                     )
                     {
-                        //                      append((element.text))
-                        for (child in element.elements) {
-                            buildElement(child, builder)
-                        }
+                        append(element.text)
                     }
                 }
                 is Element.OrderedListItem -> {

@@ -14,11 +14,11 @@ object MarkdownParser {
     private const val RULE_GROUP = "(^[-_*]{3}$)"
     private const val INLINE_GROUP = "((?<!`)`[^`\\s].*?[`\\s]?`(?!`))"
     private const val LINK_GROUP = "(\\[[^\\[\\]]*?]\\(.+?\\)|^\\[*?]\\(.*?\\))"
-    private const val ORDERED_LIST_ITEM_GROUP = "(^\\d{1,2}\\.\\s.+?$)"
     private const val BLOCK_CODE_GROUP = "(^```[\\s\\S]+?```$)"
+    private const val ORDERED_LIST_ITEM_GROUP = "(^\\d{1,2}\\. \\s.+?$)"
 
 
-    const val MARKDOWN_GROUPS = "$UNORDERED_LIST_ITEM_GROUP|$HEADER_GROUP|$QUOTE_GROUP|$ITALIC_GROUP|$BOLD_GROUP|$STRIKE_GROUP|$RULE_GROUP|$INLINE_GROUP|$LINK_GROUP|$ORDERED_LIST_ITEM_GROUP|$BLOCK_CODE_GROUP"
+    const val MARKDOWN_GROUPS = "$UNORDERED_LIST_ITEM_GROUP|$HEADER_GROUP|$QUOTE_GROUP|$ITALIC_GROUP|$BOLD_GROUP|$STRIKE_GROUP|$RULE_GROUP|$INLINE_GROUP|$LINK_GROUP|$BLOCK_CODE_GROUP|$ORDERED_LIST_ITEM_GROUP"
 
     private val LINE_SEPARATOR = System.getProperty("line.separator") ?: "\n"
 
@@ -181,25 +181,8 @@ object MarkdownParser {
                     parents.add(element)
                     lastStartIndex = endIndex
                 }
-                // ORDERED
-                10 -> {
-                    // text without "1. "
-                    val reg = "(^\\d{1,2}.)".toRegex().find(string.subSequence(startIndex, endIndex))
-                    val order = reg!!.value
-
-                    text = string.subSequence(startIndex.plus(order.length.inc()), endIndex).toString()
-
-                    // find inner elements
-                    val subs = findElements(text)
-                    val element = Element.OrderedListItem(order, text.toString(), subs)
-                    parents.add(element)
-
-                    // next find start from position "endIndex" (last regex character)
-                    lastStartIndex = endIndex
-                }
-
                 // BLOCK CODE
-                11 -> {
+                10 -> {
                     // text without "```{}```"
                     text = string.subSequence(startIndex.plus(3), endIndex.plus(-3)).toString()
                     if (text.contains(LINE_SEPARATOR)) {
@@ -219,6 +202,25 @@ object MarkdownParser {
                     } else {
                         parents.add(Element.BlockCode(Element.BlockCode.Type.SINGLE, text))
                     }
+                    lastStartIndex = endIndex
+                }
+                // ORDERED
+                11 -> {
+                    // text without "1. "
+                    val reg = "(^\\d{1,2}.)".toRegex().find(string.subSequence(startIndex, endIndex))
+                    if( reg != null )
+                    {
+                        val order = reg!!.value
+
+                        text = string.subSequence(startIndex.plus(order.length.inc()), endIndex).toString()
+
+                        // find inner elements
+                        val subs = findElements(text)
+                        val element = Element.OrderedListItem(order, text.toString(), subs)
+                        parents.add(element)
+                    }
+
+                    // next find start from position "endIndex" (last regex character)
                     lastStartIndex = endIndex
                 }
             }
