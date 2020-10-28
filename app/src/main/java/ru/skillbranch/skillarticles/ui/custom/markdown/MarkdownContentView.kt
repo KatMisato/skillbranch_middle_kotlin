@@ -66,7 +66,7 @@ class MarkdownContentView @JvmOverloads constructor(
                 it.layout(
                         left - paddingLeft / 2,
                         usedHeight,
-                        right - paddingRight / 2,
+                        r - paddingRight / 2,
                         usedHeight + it.measuredHeight
                 )
             } else {
@@ -150,6 +150,11 @@ class MarkdownContentView @JvmOverloads constructor(
             val (startPos, endPos) = searchPosition
             startPos in boundRange && endPos in boundRange
         }
+
+        if (index == -1) return
+        val view = getChildAt(index)
+        view as IMarkdownView
+        view.renderSearchPosition(searchPosition, elements[index].offset)
     }
 
     fun clearSearchResult() {

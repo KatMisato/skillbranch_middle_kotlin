@@ -137,7 +137,6 @@ class MarkdownCodeView private constructor(
         addView(iv_switch)
     }
 
-
     constructor(
             context: Context,
             fontSize: Float,
@@ -161,8 +160,6 @@ class MarkdownCodeView private constructor(
 
         measureChild(sv_scroll, widthMeasureSpec, heightMeasureSpec)
         measureChild(iv_copy, widthMeasureSpec, heightMeasureSpec)
-
-        val ms = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY)
 
         usedHeight += sv_scroll.measuredHeight + paddingTop + paddingBottom
         setMeasuredDimension(width, usedHeight)

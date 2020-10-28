@@ -165,7 +165,7 @@ class ArticleViewModel(
     }
 
     fun handleCopyCode() {
-        TODO("Not yet implemented")
+        notify(Notify.TextMessage("Code copy to clipboard"))
     }
 }
 
