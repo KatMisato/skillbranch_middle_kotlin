@@ -35,8 +35,6 @@ class MarkdownImageView private constructor(
         fontSize: Float
 ) : ViewGroup(context, null, 0), IMarkdownView {
 
-    private var isAltShow: Boolean = false
-
     override var fontSize: Float = fontSize
         set(value) {
             tv_title.textSize = value * 0.75f
@@ -249,15 +247,21 @@ class MarkdownImageView private constructor(
 
     override fun onSaveInstanceState(): Parcelable? {
         val savedState = SavedState(super.onSaveInstanceState())
-        savedState.isAltShow = isAltShow
+
+        val copy = tv_alt
+        if (copy != null) {
+            savedState.isAltShow = copy.isVisible
+        } else {
+            savedState.isAltShow = false
+        }
+
         return savedState
     }
 
     override fun onRestoreInstanceState(state: Parcelable) {
         super.onRestoreInstanceState(state)
         if (state is SavedState) {
-            isAltShow = state.isAltShow
-            tv_alt?.isVisible = isAltShow
+            tv_alt?.isVisible = state.isAltShow
         }
     }
 

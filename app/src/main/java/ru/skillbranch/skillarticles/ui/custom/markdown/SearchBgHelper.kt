@@ -213,13 +213,14 @@ class MultiLineRender(
             drawableMiddle.setBounds(
                     layout.getLineLeft(line).toInt() - padding,
                     lineTop,
-                    layout.getLineRight(line).toInt() + padding, lineBottom)
+                    layout.getLineRight(line).toInt() + padding,
+                    lineBottom
+            )
             drawableMiddle.draw(canvas)
         }
 
-        // draw last line
-        lineStartOffset = (layout.getLineLeft(startLine) - padding).toInt()
-        lineTop = getLineTop(layout, startLine)
+        lineStartOffset = (layout.getLineLeft(endLine) - padding).toInt()
+        lineTop = getLineTop(layout, endLine)
         lineBottom = getLineBottom(layout, endLine) - bottomExtraPadding
         drawEnd(canvas, lineStartOffset, lineTop, endOffset + padding, lineBottom)
     }
