@@ -6,6 +6,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.TypedValue
+import androidx.annotation.AttrRes
 import androidx.core.content.ContextCompat
 
 fun Context.dpToPx(dp: Int): Float {
@@ -40,11 +41,12 @@ val Context.isNetworkAvailable: Boolean
         }
     }
 
-fun Context.attrValue(color: Int): Int {
-
-    val typedValue = TypedValue()
-    return if (getTheme().resolveAttribute(color, typedValue, true)) {
-        ContextCompat.getColor(this, typedValue.resourceId)
-    } else
-        Color.BLACK
+fun Context.attrValue(@AttrRes id: Int): Int {
+    val value = TypedValue()
+    if (theme.resolveAttribute(id, value, true)) {
+        value.data
+        return value.data
+    } else {
+        error("can not attribute for : $id")
+    }
 }

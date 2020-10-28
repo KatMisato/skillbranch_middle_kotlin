@@ -7,11 +7,13 @@ import androidx.lifecycle.LiveData
 import ru.skillbranch.skillarticles.data.ArticleData
 import ru.skillbranch.skillarticles.data.ArticlePersonalInfo
 import ru.skillbranch.skillarticles.data.repositories.ArticleRepository
+import ru.skillbranch.skillarticles.data.repositories.MarkdownElement
 import ru.skillbranch.skillarticles.extensions.data.toAppSettings
 import ru.skillbranch.skillarticles.extensions.data.toArticlePersonalInfo
 import ru.skillbranch.skillarticles.extensions.format
+import ru.skillbranch.skillarticles.data.repositories.MarkdownParser
+import ru.skillbranch.skillarticles.data.repositories.clearContent
 import ru.skillbranch.skillarticles.extensions.indexesOf
-import ru.skillbranch.skillarticles.markdown.MarkdownParser
 import ru.skillbranch.skillarticles.viewmodels.base.BaseViewModel
 import ru.skillbranch.skillarticles.viewmodels.base.IViewModelState
 import ru.skillbranch.skillarticles.viewmodels.base.Notify
@@ -20,6 +22,7 @@ class ArticleViewModel(
     private val articleId: String
 ) :   BaseViewModel<ArticleState>(ArticleState()) , IArticleViewModel{
 
+    private var clearContent: String? = null
     private val repository = ArticleRepository
     private val TAG : String = "ArticleViewModel"
 
@@ -66,7 +69,7 @@ class ArticleViewModel(
     /**
      * load data from network
      */
-    override fun getArticleContent(): LiveData<String?> {
+    override fun getArticleContent(): LiveData<List<MarkdownElement>?> {
         return repository.loadArticleContent(articleId)
     }
 
@@ -147,10 +150,8 @@ class ArticleViewModel(
 
     override fun handleSearch(query: String?) {
         query ?: return
-        //
-        val cleanString = MarkdownParser.clear(currentState.content)
-        //
-        val results = (cleanString).indexesOf(query)
+        if(clearContent == null && currentState.content.isNotEmpty()) clearContent = currentState.content.clearContent()
+        val results = clearContent.indexesOf(query)
             .map{ it to it + query.length}
         updateState { it.copy(searchQuery = query,searchResults = results, searchPosition = 0) }
     }
@@ -163,31 +164,33 @@ class ArticleViewModel(
         updateState { it.copy(searchPosition = it.searchPosition.inc()) }
     }
 
+    fun handleCopyCode() {
+        TODO("Not yet implemented")
+    }
 }
 
-
 data class ArticleState(
-    val isAuth: Boolean = false,
-    val isLoadingContent: Boolean = true,
-    val isLoadingReviews: Boolean = true,
-    val isLike: Boolean = false,
-    val isBookmark: Boolean = false,
-    val isShowMenu: Boolean = false,
-    val isBigText: Boolean = false,
-    val isDarkMode: Boolean = false,
-    val isSearch: Boolean = false,
-    val searchQuery: String? = null,
-    val searchResults: List<Pair<Int, Int>> = emptyList(),
-    val searchPosition: Int = 0,
-    val shareLink: String? = null,
-    val title: String? = null,
-    val category: String? = null,
-    val categoryIcon: Any? = null,
-    val date: String? = null,
-    val author :Any? = null,
-    val poster: String? = null,
-    internal val content: String? = null,
-    val reviews: List<Any> = emptyList()
+        val isAuth: Boolean = false,
+        val isLoadingContent: Boolean = true,
+        val isLoadingReviews: Boolean = true,
+        val isLike: Boolean = false,
+        val isBookmark: Boolean = false,
+        val isShowMenu: Boolean = false,
+        val isBigText: Boolean = false,
+        val isDarkMode: Boolean = false,
+        val isSearch: Boolean = false,
+        val searchQuery: String? = null,
+        val searchResults: List<Pair<Int, Int>> = emptyList(),
+        val searchPosition: Int = 0,
+        val shareLink: String? = null,
+        val title: String? = null,
+        val category: String? = null,
+        val categoryIcon: Any? = null,
+        val date: String? = null,
+        val author :Any? = null,
+        val poster: String? = null,
+        val content: List<MarkdownElement> = emptyList(),
+        val reviews: List<Any> = emptyList()
 ): IViewModelState{
     override fun save(outState: Bundle) {
         outState.putAll(
