@@ -74,7 +74,7 @@ class MarkdownCodeView private constructor(
     private val iconSize = context.dpToIntPx(12)
     private val radius = context.dpToIntPx(8)
     private val padding = context.dpToIntPx(8)
-    private val fadingOffset = context.dpToIntPx(155)
+    private val fadingOffset = context.dpToIntPx(144)
     private val textExtraPadding = context.dpToIntPx(80)
     private val scrollBarHeight = context.dpToIntPx(2)
 
@@ -168,7 +168,7 @@ class MarkdownCodeView private constructor(
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         val usedHeight = paddingTop
-        val bodyWidth = r - 1 - paddingLeft - paddingRight
+        val bodyWidth =  r - l - paddingLeft - paddingRight
         val left = paddingLeft
         val right = paddingLeft + bodyWidth
 
