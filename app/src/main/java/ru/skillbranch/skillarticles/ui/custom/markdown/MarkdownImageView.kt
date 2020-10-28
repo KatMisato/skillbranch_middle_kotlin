@@ -86,6 +86,8 @@ class MarkdownImageView private constructor(
         strokeWidth = 0f
     }
 
+    private var isAltShow = false
+
     init {
         layoutParams = LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
         iv_image = ImageView(context).apply {
@@ -248,12 +250,7 @@ class MarkdownImageView private constructor(
     override fun onSaveInstanceState(): Parcelable? {
         val savedState = SavedState(super.onSaveInstanceState())
 
-        val copy = tv_alt
-        if (copy != null) {
-            savedState.isAltShow = copy.isVisible
-        } else {
-            savedState.isAltShow = false
-        }
+        savedState.isAltShow = isAltShow
 
         return savedState
     }
@@ -261,7 +258,8 @@ class MarkdownImageView private constructor(
     override fun onRestoreInstanceState(state: Parcelable) {
         super.onRestoreInstanceState(state)
         if (state is SavedState) {
-            tv_alt?.isVisible = state.isAltShow
+            isAltShow = state.isAltShow
+            tv_alt?.isVisible = isAltShow
         }
     }
 
