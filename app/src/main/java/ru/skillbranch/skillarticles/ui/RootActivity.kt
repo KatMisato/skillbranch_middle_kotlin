@@ -151,7 +151,7 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
 
         btn_result_up.setOnClickListener {
             if (!tv_text_content.hasFocus()) tv_text_content.requestFocus()
-           // hideKeyboard(btn_result_up)
+            //hideKeyboard(btn_result_up)
             viewModel.handleUpResult()
         }
 
