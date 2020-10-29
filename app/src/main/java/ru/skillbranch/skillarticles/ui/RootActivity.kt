@@ -101,7 +101,6 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
     override fun renderNotification(notify: Notify) {
         val snackbar = Snackbar.make(coordinator_container, notify.message, Snackbar.LENGTH_LONG)
                 .setAnchorView(bottombar)
-                .setActionTextColor(getColor(R.color.color_accent_dark))
 
         when (notify) {
             is Notify.ActionMessage -> {
