@@ -2,10 +2,9 @@ package ru.skillbranch.skillarticles.extensions
 
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.marginBottom
-import androidx.core.view.marginLeft
-import androidx.core.view.marginRight
-import androidx.core.view.marginTop
+import androidx.core.view.*
+import androidx.navigation.NavDestination
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 fun View.setMarginOptionally(left: Int = marginLeft, top: Int = marginTop, right: Int = marginRight, bottom: Int = marginBottom) {
     (layoutParams as ViewGroup.MarginLayoutParams).run {
@@ -24,4 +23,10 @@ fun View.setPaddingOptionally(
         bottom: Int = paddingBottom
 ) {
     setPadding(left, top, right, bottom)
+}
+
+fun BottomNavigationView.selectDestination(destination: NavDestination) {
+    menu.findItem(destination.id)?.let {
+        it.isChecked = true
+    } ?: run { menu.children.last().isChecked = true }
 }
