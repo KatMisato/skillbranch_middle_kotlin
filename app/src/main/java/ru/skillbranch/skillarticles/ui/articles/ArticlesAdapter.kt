@@ -19,7 +19,8 @@ import ru.skillbranch.skillarticles.ui.custom.ArticleItemView
 
 class ArticlesAdapter(private val listener: (ArticleItemData) -> Unit) : ListAdapter<ArticleItemData, ArticleVH>(ArticleDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleVH {
-        val containerView = ArticleItemView(parent.context)//LayoutInflater.from(parent.context).inflate(R.layout.item_article, parent, false)
+        val containerView = ArticleItemView(parent.context)
+        //val containerView = LayoutInflater.from(parent.context).inflate(R.layout.item_article, parent, false)
         return ArticleVH(containerView)
     }
 
@@ -63,8 +64,7 @@ class ArticleVH(override val containerView: ArticleItemView) : RecyclerView.View
 //        tv_likes_count.text = "${item.likeCount}"
 //        tv_comments_count.text = "${item.commentCount}"
 //        tv_read_duration.text = "${item.readDuration} min read"
-//        (containerView as ArticleItemView).bind(item)
-        (containerView as ArticleItemView).bind(item)
+        containerView.bind(item)
         itemView.setOnClickListener { listener(item) }
     }
 }

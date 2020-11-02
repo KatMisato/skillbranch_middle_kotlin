@@ -20,6 +20,7 @@ import ru.skillbranch.skillarticles.data.ArticleItemData
 import ru.skillbranch.skillarticles.extensions.*
 import java.lang.Math.abs
 import java.lang.Math.max
+import kotlin.math.round
 
 class ArticleItemView constructor(context: Context) : ViewGroup(context), LayoutContainer {
     override val containerView = this
@@ -43,13 +44,12 @@ class ArticleItemView constructor(context: Context) : ViewGroup(context), Layout
 
     private val dpInPx8 = context.dpToIntPx(8)
     private val dpInPx16 = context.dpToIntPx(16)
-    private val dpInPx20 = context.dpToIntPx(20)
     private val dpInPx24 = context.dpToIntPx(24)
 
     private val posterSize = containerView.context.dpToIntPx(64)
     private val cornerRadius = containerView.context.dpToIntPx(8)
     private val categorySize = containerView.context.dpToIntPx(40)
-    private val titleHeight = posterSize + categorySize/2
+    private val titleHeight = containerView.context.dpToIntPx(84)
 
     private val iconSize = context.dpToIntPx(16)
 
@@ -65,7 +65,7 @@ class ArticleItemView constructor(context: Context) : ViewGroup(context), Layout
         tv_date = addTextView(R.id.tv_date, sizeText12sp, textColorGray)
         tv_author = addTextView(R.id.tv_author, sizeText12sp, textColorPrimary)
 
-        tv_title =  addTextView(R.id.tv_title, sizeText18sp, textColorPrimary, true)
+        tv_title = addTextView(R.id.tv_title, sizeText18sp, textColorPrimary, true)
         iv_poster = addImageViewWithId(R.id.iv_poster, posterSize)
         iv_category = addImageViewWithId(R.id.iv_category, categorySize)
 
@@ -73,9 +73,12 @@ class ArticleItemView constructor(context: Context) : ViewGroup(context), Layout
 
         iv_likes = addImageViewWithIcon(R.drawable.ic_favorite_black_24dp)
         tv_likes_count = addTextView(R.id.tv_likes_count, sizeText12sp, textColorGray)
+
         iv_comments = addImageViewWithIcon(R.drawable.ic_insert_comment_black_24dp)
         tv_comments_count = addTextView(R.id.tv_comments_count, sizeText12sp, textColorGray)
+
         tv_read_duration = addTextView(R.id.tv_read_duration, sizeText12sp, textColorGray)
+
         iv_bookmark = addImageViewWithIcon(R.drawable.bookmark_states)
     }
 
@@ -112,7 +115,7 @@ class ArticleItemView constructor(context: Context) : ViewGroup(context), Layout
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        var usedHeight = paddingTop
+        var usedHeight = dpInPx16
         val width = View.getDefaultSize(suggestedMinimumWidth, widthMeasureSpec)
 
         // date + author
@@ -135,7 +138,8 @@ class ArticleItemView constructor(context: Context) : ViewGroup(context), Layout
         measureChild(tv_comments_count, widthMeasureSpec, heightMeasureSpec)
         measureChild(tv_read_duration, widthMeasureSpec, heightMeasureSpec)
 
-        usedHeight += iconSize + paddingBottom
+        val fontDiff = iconSize - tv_likes_count.measuredHeight
+        usedHeight += iconSize + dpInPx16 - fontDiff + 1
         setMeasuredDimension(width, usedHeight)
     }
 
@@ -151,21 +155,20 @@ class ArticleItemView constructor(context: Context) : ViewGroup(context), Layout
         val firstLineBottom = usedHeight + tv_date.measuredHeight
         tv_date.layout(left, usedHeight, left + tv_date.measuredWidth, firstLineBottom)
         tv_author.layout(left + tv_date.measuredWidth + dpInPx16, usedHeight, right, firstLineBottom)
-        usedHeight += tv_date.measuredHeight + dpInPx8
+        usedHeight += tv_author.measuredHeight + dpInPx8
 
         // заголовок + картинки
         val titleMeasuredHeight = tv_title.measuredHeight
-        val diffH = abs(titleHeight - titleMeasuredHeight) / 2
-        Log.e("ArticleItemView", "titleHeight = $titleHeight, titleMeasuredHeight = $titleMeasuredHeight, diffH = $diffH")
-        val topTitle =  if (titleHeight > titleMeasuredHeight) {
-            usedHeight + diffH
+        Log.e("ArticleItemView", "titleHeight = $titleHeight, titleMeasuredHeight = $titleMeasuredHeight")
+        val topTitle = if (titleHeight > titleMeasuredHeight) {
+            usedHeight + (titleHeight - titleMeasuredHeight) / 2
         } else {
             usedHeight
         }
         tv_title.layout(left, topTitle, left + tv_title.measuredWidth, topTitle + titleMeasuredHeight)
         iv_poster.layout(right - posterSize, usedHeight, right, usedHeight + posterSize)
         iv_category.layout(iv_poster.left - categorySize / 2, iv_poster.bottom - categorySize / 2, iv_poster.left + categorySize / 2, iv_poster.bottom + categorySize / 2)
-        usedHeight = iv_category.bottom + dpInPx8
+        usedHeight += kotlin.math.max(titleHeight, titleMeasuredHeight) + dpInPx8
 
         // description
         tv_description.layout(left, usedHeight, left + bodyWidth, usedHeight + tv_description.measuredHeight)
@@ -181,7 +184,7 @@ class ArticleItemView constructor(context: Context) : ViewGroup(context), Layout
         iv_likes.layout(left, topIcon, left + iconSize, bottomIcon)
         tv_likes_count.layout(iv_likes.right + dpInPx8, usedHeight, iv_likes.right + dpInPx8 + tv_likes_count.measuredWidth, bottomText)
 
-        iv_comments.layout(tv_likes_count.right + dpInPx16,  topIcon, tv_likes_count.right + dpInPx16 + iconSize, bottomIcon)
+        iv_comments.layout(tv_likes_count.right + dpInPx16, topIcon, tv_likes_count.right + dpInPx16 + iconSize, bottomIcon)
         tv_comments_count.layout(iv_comments.right + dpInPx8, usedHeight, iv_comments.right + dpInPx8 + tv_comments_count.measuredWidth, bottomText)
 
         tv_read_duration.layout(tv_comments_count.right + dpInPx16, usedHeight, tv_comments_count.right + dpInPx16 + tv_read_duration.measuredWidth, bottomText)
