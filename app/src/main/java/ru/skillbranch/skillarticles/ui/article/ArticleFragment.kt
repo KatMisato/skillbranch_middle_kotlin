@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
-import android.widget.SearchView
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
@@ -22,7 +22,9 @@ import kotlinx.android.synthetic.main.item_article.tv_author
 import kotlinx.android.synthetic.main.item_article.tv_date
 import kotlinx.android.synthetic.main.item_article.tv_title
 import kotlinx.android.synthetic.main.layout_bottombar.*
+import kotlinx.android.synthetic.main.layout_bottombar.view.*
 import kotlinx.android.synthetic.main.layout_submenu.*
+import kotlinx.android.synthetic.main.layout_submenu.view.*
 import kotlinx.android.synthetic.main.search_view_layout.*
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.data.repositories.MarkdownElement
@@ -66,6 +68,7 @@ class ArticleFragment : BaseFragment<ArticleViewModel>(), IArticleView {
 
     private val bottombar
         get() = root.bottombar
+
 
     private val submenu
         get() = root.submenu
@@ -162,30 +165,30 @@ class ArticleFragment : BaseFragment<ArticleViewModel>(), IArticleView {
     }
 
     private fun setupSubmenu() {
-        btn_text_up.setOnClickListener { viewModel.handleUpText() }
-        btn_text_down.setOnClickListener { viewModel.handleDownText() }
-        switch_mode.setOnClickListener { viewModel.handleNightMode() }
+        submenu.btn_text_up.setOnClickListener { viewModel.handleUpText() }
+        submenu.btn_text_down.setOnClickListener { viewModel.handleDownText() }
+        submenu.switch_mode.setOnClickListener { viewModel.handleNightMode() }
     }
 
     private fun setupBottombar() {
-        btn_like.setOnClickListener { viewModel.handleLike() }
-        btn_bookmark.setOnClickListener { viewModel.handleBookmark() }
-        btn_share.setOnClickListener { viewModel.handleShare() }
-        btn_settings.setOnClickListener { viewModel.handleToggleMenu() }
+        bottombar.btn_like.setOnClickListener { viewModel.handleLike() }
+        bottombar.btn_bookmark.setOnClickListener { viewModel.handleBookmark() }
+        bottombar.btn_share.setOnClickListener { viewModel.handleShare() }
+        bottombar.btn_settings.setOnClickListener { viewModel.handleToggleMenu() }
 
-        btn_result_up.setOnClickListener {
+        bottombar.btn_result_up.setOnClickListener {
             if (!tv_text_content.hasFocus()) tv_text_content.requestFocus()
-            root.hideKeyboard(btn_result_up)
+            root.hideKeyboard(bottombar.btn_result_up)
             viewModel.handleUpResult()
         }
 
-        btn_result_down.setOnClickListener {
+        bottombar.btn_result_down.setOnClickListener {
             if (!tv_text_content.hasFocus()) tv_text_content.requestFocus()
-            root.hideKeyboard(btn_result_down)
+            root.hideKeyboard(bottombar.btn_result_down)
             viewModel.handleDownResult()
         }
 
-        btn_search_close.setOnClickListener {
+        bottombar.btn_search_close.setOnClickListener {
             viewModel.handleSearchMode(false)
             root.invalidateOptionsMenu()
         }
@@ -206,27 +209,27 @@ class ArticleFragment : BaseFragment<ArticleViewModel>(), IArticleView {
 
         private var isLoadingContent: Boolean by ObserveProp(true)
 
-        private var isLike: Boolean by RenderProp(false) { btn_like.isChecked = it }
-        private var isBookmark: Boolean by RenderProp(false) { btn_bookmark.isChecked = it }
+        private var isLike: Boolean by RenderProp(false) { bottombar.btn_like.isChecked = it }
+        private var isBookmark: Boolean by RenderProp(false) { bottombar.btn_bookmark.isChecked = it }
         private var isShowMenu: Boolean by RenderProp(false) {
-            btn_settings.isChecked = it
+            bottombar.btn_settings.isChecked = it
             if (it) submenu.open() else submenu.close()
         }
 
         private var isBigText: Boolean by RenderProp(false) {
             if (it) {
                 tv_text_content.textSize = 18f
-                btn_text_up.isChecked = true
-                btn_text_down.isChecked = false
+                submenu.btn_text_up.isChecked = true
+                submenu.btn_text_down.isChecked = false
             } else {
                 tv_text_content.textSize = 14f
-                btn_text_up.isChecked = false
-                btn_text_down.isChecked = true
+                submenu.btn_text_up.isChecked = false
+                submenu.btn_text_down.isChecked = true
             }
         }
 
         private var isDarkMode: Boolean by RenderProp(false, needInit = false) {
-            switch_mode.isChecked = it
+            submenu.switch_mode.isChecked = it
             root.delegate.localNightMode = if (it) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
         }
 

@@ -10,6 +10,7 @@ import kotlinx.android.synthetic.main.layout_bottombar.*
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.extensions.selectDestination
 import ru.skillbranch.skillarticles.ui.base.BaseActivity
+import ru.skillbranch.skillarticles.ui.custom.Bottombar
 import ru.skillbranch.skillarticles.viewmodels.RootViewModel
 import ru.skillbranch.skillarticles.viewmodels.base.IViewModelState
 import ru.skillbranch.skillarticles.viewmodels.base.NavigationCommand
@@ -32,12 +33,16 @@ class RootActivity : BaseActivity<RootViewModel>() {
         )
 
         setupActionBarWithNavController(navController, appBarConfiguration)
-        nav_view.setOnNavigationItemReselectedListener {
+        nav_view.setOnNavigationItemSelectedListener {
             viewModel.navigate(NavigationCommand.To(it.itemId))
             true
         }
 
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
+            if (destination.id == R.id.nav_auth && viewModel.currentState.isAuth) {
+                controller.popBackStack()
+                viewModel.navigate(NavigationCommand.To(R.id.nav_profile, arguments))
+            }
             nav_view.selectDestination(destination)
         }
     }
@@ -46,8 +51,7 @@ class RootActivity : BaseActivity<RootViewModel>() {
         val snackbar = Snackbar.make(container, notify.message, Snackbar.LENGTH_LONG)
                 .setAnchorView(bottombar)
 
-        if (bottombar != null) snackbar.anchorView = bottombar
-        else snackbar.anchorView = nav_view
+        snackbar.anchorView = findViewById<Bottombar?>(R.id.bottombar) ?: nav_view
 
         when (notify) {
             is Notify.ActionMessage -> {

@@ -11,6 +11,7 @@ import ru.skillbranch.skillarticles.viewmodels.base.IViewModelState
 abstract class BaseFragment<T : BaseViewModel<out IViewModelState>> : Fragment() {
     val root: RootActivity
         get() = activity as RootActivity
+
     open val binding: Binding? = null
     protected abstract val viewModel: T
     protected abstract val layout: Int
@@ -25,9 +26,9 @@ abstract class BaseFragment<T : BaseViewModel<out IViewModelState>> : Fragment()
     abstract fun setupViews()
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? = inflater.inflate(layout, container, false)
 
 
@@ -36,14 +37,14 @@ abstract class BaseFragment<T : BaseViewModel<out IViewModelState>> : Fragment()
 
         //prepare toolbar
         root.toolbarBuilder
-            .invalidate()
-            .prepare(prepareToolbar)
-            .build(root)
+                .invalidate()
+                .prepare(prepareToolbar)
+                .build(root)
 
         root.bottombarBuilder
-            .invalidate()
-            .prepare(prepareBottombar)
-            .build(root)
+                .invalidate()
+                .prepare(prepareBottombar)
+                .build(root)
 
         //restore state
         viewModel.restoreState()
@@ -76,10 +77,10 @@ abstract class BaseFragment<T : BaseViewModel<out IViewModelState>> : Fragment()
             for ((index, menuHolder) in root.toolbarBuilder.items.withIndex()) {
                 val item = menu.add(0, menuHolder.menuId, index, menuHolder.title)
                 item.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS or MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW)
-                    .setIcon(menuHolder.icon)
-                    .setOnMenuItemClickListener {
-                        menuHolder.clickListener?.invoke(it)?.let { true } ?: false
-                    }
+                        .setIcon(menuHolder.icon)
+                        .setOnMenuItemClickListener {
+                            menuHolder.clickListener?.invoke(it)?.let { true } ?: false
+                        }
 
                 if (menuHolder.actionViewLayout != null) item.setActionView(menuHolder.actionViewLayout)
             }
