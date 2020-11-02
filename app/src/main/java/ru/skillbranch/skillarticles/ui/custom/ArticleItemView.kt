@@ -139,7 +139,7 @@ class ArticleItemView constructor(context: Context) : ViewGroup(context), Layout
         measureChild(tv_read_duration, widthMeasureSpec, heightMeasureSpec)
 
         val fontDiff = iconSize - tv_likes_count.measuredHeight
-        usedHeight += iconSize + dpInPx16 - fontDiff + 1
+        usedHeight += iconSize + dpInPx16 - fontDiff + 2
         setMeasuredDimension(width, usedHeight)
     }
 
@@ -161,7 +161,7 @@ class ArticleItemView constructor(context: Context) : ViewGroup(context), Layout
         val titleMeasuredHeight = tv_title.measuredHeight
         Log.e("ArticleItemView", "titleHeight = $titleHeight, titleMeasuredHeight = $titleMeasuredHeight")
         val topTitle = if (titleHeight > titleMeasuredHeight) {
-            usedHeight + (titleHeight - titleMeasuredHeight) / 2
+            usedHeight + (titleHeight - titleMeasuredHeight) / 2 - context.dpToIntPx(4)
         } else {
             usedHeight
         }
