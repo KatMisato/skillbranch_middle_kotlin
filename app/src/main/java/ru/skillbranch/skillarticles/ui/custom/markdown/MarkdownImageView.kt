@@ -45,7 +45,6 @@ class MarkdownImageView private constructor(
     override val spannableContent: Spannable
         get() = tv_title.text as Spannable
 
-    //views
     private lateinit var imageUrl: String
     private lateinit var imageTitle: CharSequence
 
