@@ -10,6 +10,8 @@ import kotlinx.android.synthetic.main.fragment_articles.*
 import kotlinx.android.synthetic.main.fragment_bookmarks.*
 import kotlinx.android.synthetic.main.search_view_layout.*
 import ru.skillbranch.skillarticles.R
+import ru.skillbranch.skillarticles.ui.articles.ArticlesAdapter
+import ru.skillbranch.skillarticles.ui.articles.ArticlesFragmentDirections
 import ru.skillbranch.skillarticles.ui.base.BaseFragment
 import ru.skillbranch.skillarticles.ui.base.Binding
 import ru.skillbranch.skillarticles.ui.base.MenuItemHolder
@@ -17,6 +19,7 @@ import ru.skillbranch.skillarticles.ui.base.ToolbarBuilder
 import ru.skillbranch.skillarticles.ui.delegates.RenderProp
 import ru.skillbranch.skillarticles.viewmodels.articles.ArticlesState
 import ru.skillbranch.skillarticles.viewmodels.base.IViewModelState
+import ru.skillbranch.skillarticles.viewmodels.base.NavigationCommand
 import ru.skillbranch.skillarticles.viewmodels.bookmarks.BookmarksState
 import ru.skillbranch.skillarticles.viewmodels.bookmarks.BookmarksViewModel
 
@@ -34,7 +37,22 @@ class BookmarksFragment : BaseFragment<BookmarksViewModel>() {
         )
     }
 
-    private val bookmarksAdapter = BookmarksAdapter()
+    private val bookmarksAdapter = ArticlesAdapter({ item ->
+        val action = ArticlesFragmentDirections.actionNavArticlesToPageArticle(
+                item.id,
+                item.author,
+                item.authorAvatar,
+                item.category,
+                item.categoryIcon,
+                item.poster,
+                item.title,
+                item.date
+        )
+
+        viewModel.navigate(NavigationCommand.To(action.actionId, action.arguments))
+    }) { id, isChecked ->
+       run{}
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
