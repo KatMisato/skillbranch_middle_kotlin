@@ -1,4 +1,4 @@
-package ru.skillbranch.skillarticles.ui.articles
+package ru.skillbranch.skillarticles.ui.article
 
 import android.view.View
 import android.view.ViewGroup
