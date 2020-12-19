@@ -72,9 +72,9 @@ class ArticleViewModel(
             info ?: return@subscribeOnDataSource null
             state.copy(
                     isBookmark = info.isBookmark,
-                    isLike = info.isLike
+                    isLike = info.isLike,
+                    notSendedComment = info.notSendedComment
             )
-
         }
 
         subscribeOnDataSource(repository.getAppSettings()) { settings, state ->
@@ -190,13 +190,15 @@ class ArticleViewModel(
     }
 
     override fun handleSendComment(comment: String) {
+        val info = currentState.toArticlePersonalInfo()
         if (!currentState.isAuth) {
-            updateState { it.copy(inputComment = comment) }
+            repository.updateArticlePersonalInfo(info.copy(notSendedComment = comment))
             navigate(NavigationCommand.StartLogin())
         }
         else {
             viewModelScope.launch {
                 repository.sendComment(articleId, comment, currentState.answerToSlug)
+                repository.updateArticlePersonalInfo(info.copy(notSendedComment = null))
                 withContext(Dispatchers.Main) {
                     updateState { it.copy(answerTo = null, answerToSlug = null) }
                 }
@@ -245,7 +247,7 @@ data class ArticleState(
         val answerTo: String? = null,
         val answerToSlug: String? = null,
         val showBottomBar: Boolean = true,
-        val inputComment: String? = null
+        val notSendedComment: String? = null
 ) : IViewModelState {
 
     override fun save(outState: SavedStateHandle) {
@@ -254,7 +256,6 @@ data class ArticleState(
         outState.set("searchQuery", searchQuery)
         outState.set("searchResults", searchResults)
         outState.set("searchPosition", searchPosition)
-        outState.set("inputComment", inputComment)
     }
 
     override fun restore(savedState: SavedStateHandle): ArticleState {
@@ -263,8 +264,7 @@ data class ArticleState(
                 isSearch = savedState["isSearch"] ?: false,
                 searchQuery = savedState["searchQuery"],
                 searchResults = savedState["searchResults"] ?: emptyList(),
-                searchPosition = savedState["searchPosition"] ?: 0,
-                inputComment = savedState["inputComment"]
+                searchPosition = savedState["searchPosition"] ?: 0
         )
     }
 }

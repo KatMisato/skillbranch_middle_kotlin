@@ -111,7 +111,6 @@ class ArticleFragment : BaseFragment<ArticleViewModel>(), IArticleView {
         tv_author_name.text = args.author
         tv_comment_date.text = args.date.format()
 
-        et_comment.setText(viewModel.state.value?.inputComment)
         et_comment.setOnEditorActionListener { view, _, _ ->
             root.hideKeyboard(view)
             viewModel.handleSendComment(view.text.toString())
@@ -135,6 +134,7 @@ class ArticleFragment : BaseFragment<ArticleViewModel>(), IArticleView {
         }
 
         viewModel.observeList(viewLifecycleOwner) { commentsAdapter.submitList(it) }
+        viewModel.observeState(viewLifecycleOwner) { et_comment.setText(it.notSendedComment) }
     }
 
     override fun onDestroyView() {
