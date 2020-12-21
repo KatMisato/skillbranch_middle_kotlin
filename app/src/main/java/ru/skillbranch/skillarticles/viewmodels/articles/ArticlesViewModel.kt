@@ -93,10 +93,8 @@ class ArticlesViewModel(handle: SavedStateHandle) : BaseViewModel<ArticlesState>
     }
 
     fun handleToggleBookmark(id: String, isChecked: Boolean) {
-        var msg = "Add to bookmarks"
-        if (!isChecked) msg = "Remove from bookmarks"
-        notify(Notify.TextMessage(msg))
         repository.updateBookmark(id, isChecked)
+        listData.value?.dataSource?.invalidate()
     }
 }
 
