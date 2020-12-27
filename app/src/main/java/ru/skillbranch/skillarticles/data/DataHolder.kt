@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import ru.skillbranch.skillarticles.data.EntityGenerator.generateArticleItems
 import ru.skillbranch.skillarticles.data.EntityGenerator.generateComments
 import ru.skillbranch.skillarticles.data.models.*
 import java.util.*
@@ -15,7 +14,7 @@ object LocalDataHolder {
     private val articleInfo = MutableLiveData<ArticlePersonalInfo?>(null)
     private val settings = MutableLiveData(AppSettings())
     private val isAuth = MutableLiveData(false)
-    val localArticleItems: MutableList<ArticleItemData> = EntityGenerator.generateArticleItems(50) as MutableList<ArticleItemData>
+    val localArticleItems: MutableList<ArticleItemData> =  EntityGenerator.generateArticleItems(50) as MutableList<ArticleItemData>
     val localArticles: MutableMap<String, MutableLiveData<ArticleData>> = mutableMapOf()
 
     fun findArticle(articleId: String): LiveData<ArticleData?> {
@@ -30,7 +29,6 @@ object LocalDataHolder {
 
     fun findArticlePersonalInfo(articleId: String): LiveData<ArticlePersonalInfo?> {
         GlobalScope.launch {
-            //delay(500)
             articleInfo.postValue(ArticlePersonalInfo(isBookmark = true))
         }
         return articleInfo
@@ -61,7 +59,7 @@ object LocalDataHolder {
 
 object NetworkDataHolder {
 
-    val networkArticleItems: List<ArticleItemData> = generateArticleItems(200)
+    val networkArticleItems: List<ArticleItemData> = EntityGenerator.generateArticleItems(200)
 
     val commentsData: Map<String, MutableList<CommentItemData>> by lazy {
         networkArticleItems.associate { article ->
@@ -72,7 +70,6 @@ object NetworkDataHolder {
     fun loadArticleContent(articleId: String): LiveData<String?> {
         val content = MutableLiveData<String?>(null)
         GlobalScope.launch {
-            delay(1500)
             val s = articlesContent[articleId.toInt() % 6]
             content.postValue(s)
         }

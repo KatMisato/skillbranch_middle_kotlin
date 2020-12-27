@@ -28,7 +28,6 @@ object ArticlesRepository {
     private fun searchBookmarksByTitle(start: Int, size: Int, queryTitle: String) = local.localArticleItems.asSequence().filter { it.isBookmark && it.title.contains(queryTitle, true) }.drop(start).take(size).toList()
 
     fun loadArticlesFromNetwork(start: Int, size: Int): List<ArticleItemData> = network.networkArticleItems.drop(start).take(size)
-            //.apply { sleep(500) }
 
     fun insertArticlesToDb(articles: List<ArticleItemData>) {
         local.localArticleItems.addAll(articles).apply { sleep(100) }

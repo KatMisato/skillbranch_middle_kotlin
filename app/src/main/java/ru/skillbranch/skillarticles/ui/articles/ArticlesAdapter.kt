@@ -1,5 +1,6 @@
 package ru.skillbranch.skillarticles.ui.articles
 
+import android.view.View
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -26,7 +27,7 @@ class ArticleDiffCallback : DiffUtil.ItemCallback<ArticleItemData>() {
     override fun areContentsTheSame(oldItem: ArticleItemData, newItem: ArticleItemData): Boolean = oldItem == newItem
 }
 
-class ArticleVH(override val containerView: ArticleItemView) : RecyclerView.ViewHolder(containerView), LayoutContainer {
+class ArticleVH(override val containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer {
     fun bind(
             item: ArticleItemData?,
             listener: (ArticleItemData) -> Unit,
