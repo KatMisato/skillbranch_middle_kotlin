@@ -15,5 +15,5 @@ data class ArticleItemData(
         val likeCount: Int = 0,
         val commentCount: Int = 0,
         val readDuration: Int = 0,
-        var isBookmark: Boolean = false
+        val isBookmark: Boolean = false
 )

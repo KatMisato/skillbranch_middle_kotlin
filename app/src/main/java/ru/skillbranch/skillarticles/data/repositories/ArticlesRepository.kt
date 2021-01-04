@@ -19,23 +19,24 @@ object ArticlesRepository {
 
     fun searchBookmarks(searchQuery: String): ArticlesDataFactory = ArticlesDataFactory(ArticleStrategy.SearchBookmark(::searchBookmarksByTitle, searchQuery))
 
-    private fun findArticlesByRange(start: Int, size: Int = 50) = network.networkArticleItems.drop(start).take(size)
+    private fun findArticlesByRange(start: Int, size: Int = 50) = local.localArticleItems.drop(start).take(size)
 
-    private fun findBookmarksByRange(start: Int, size: Int = 50) = network.networkArticleItems.asSequence().filter { it.isBookmark }.drop(start).take(size).toList()
+    private fun findBookmarksByRange(start: Int, size: Int = 50) = local.localArticleItems.asSequence().filter { it.isBookmark }.drop(start).take(size).toList()
 
-    private fun searchArticlesByTitle(start: Int, size: Int, queryTitle: String) = network.networkArticleItems.asSequence().filter { it.title.contains(queryTitle, true) }.drop(start).take(size).toList()
+    private fun searchArticlesByTitle(start: Int, size: Int, queryTitle: String) = local.localArticleItems.asSequence().filter { it.title.contains(queryTitle, true) }.drop(start).take(size).toList()
 
-    private fun searchBookmarksByTitle(start: Int, size: Int, queryTitle: String) = network.networkArticleItems.asSequence().filter { it.isBookmark && it.title.contains(queryTitle, true) }.drop(start).take(size).toList()
+    private fun searchBookmarksByTitle(start: Int, size: Int, queryTitle: String) = local.localArticleItems.asSequence().filter { it.isBookmark && it.title.contains(queryTitle, true) }.drop(start).take(size).toList()
 
-    fun loadArticlesFromNetwork(start: Int, size: Int): List<ArticleItemData> = network.networkArticleItems.drop(start).take(size)
-            //.apply { sleep(500) }
+    fun loadArticlesFromNetwork(start: Int, size: Int): List<ArticleItemData> = network.networkArticleItems.drop(start).take(size).apply { sleep(500) }
 
     fun insertArticlesToDb(articles: List<ArticleItemData>) {
-        local.localArticleItems.addAll(articles)//.apply { sleep(100) }
+        local.localArticleItems.addAll(articles).apply { sleep(100) }
     }
 
-    fun updateBookmark(articleId: String, isBookmark: Boolean) {
-        local.localArticleItems.find { it.id == articleId }?.isBookmark = isBookmark
+    fun updateBookmark(articleId: String, isChecked: Boolean) {
+        val index = local.localArticleItems.indexOfFirst { it.id == articleId }
+        if (index == -1) return
+        local.localArticleItems[index] = local.localArticleItems[index].copy(isBookmark = isChecked)
     }
 }
 

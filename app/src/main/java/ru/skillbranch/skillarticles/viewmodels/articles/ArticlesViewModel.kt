@@ -105,7 +105,7 @@ data class ArticlesState(val isSearch: Boolean = false,
 
 class ArticlesBoundaryCallback(private val zeroLoadingHandle: () -> Unit, private val itemAtEndHandle: (ArticleItemData) -> Unit) : PagedList.BoundaryCallback<ArticleItemData>() {
     override fun onZeroItemsLoaded() {
-        zeroLoadingHandle
+        zeroLoadingHandle()
     }
 
     override fun onItemAtEndLoaded(itemAtEnd: ArticleItemData) {
