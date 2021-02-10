@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_articles.*
-import kotlinx.android.synthetic.main.search_view_layout.*
+import kotlinx.android.synthetic.main.search_view_layout.view.*
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.ui.base.BaseFragment
 import ru.skillbranch.skillarticles.ui.base.Binding
@@ -21,21 +23,28 @@ import ru.skillbranch.skillarticles.viewmodels.base.IViewModelState
 import ru.skillbranch.skillarticles.viewmodels.base.NavigationCommand
 
 class ArticlesFragment : BaseFragment<ArticlesViewModel>() {
-    override val viewModel: ArticlesViewModel by viewModels()
+    override val viewModel: ArticlesViewModel by activityViewModels()
     override val layout: Int = R.layout.fragment_articles
     override val binding: ArticlesBinding by lazy { ArticlesBinding() }
+    private val args: ArticlesFragmentArgs by navArgs()
 
-    override val prepareToolbar: (ToolbarBuilder.() -> Unit)? = {
+    override val prepareToolbar: (ToolbarBuilder.() -> Unit) = {
         addMenuItem(
-                MenuItemHolder("Search",
-                        R.id.action_search,
-                        R.drawable.ic_search_black_24dp,
-                        R.layout.search_view_layout)
+            MenuItemHolder(
+                "Search",
+                R.id.action_search,
+                R.drawable.ic_search_black_24dp,
+                R.layout.search_view_layout
+            )
         )
     }
 
-    private val articlesAdapter = ArticlesAdapter({ item ->
-        val action = ArticlesFragmentDirections.actionNavArticlesToPageArticle(
+    private val articlesAdapter = ArticlesAdapter { item, isToggleBookmark ->
+
+        if (isToggleBookmark) {
+            viewModel.handleToggleBookmark(item.id, item.isBookmark)
+        } else {
+            val action = ArticlesFragmentDirections.actionToPageArticle(
                 item.id,
                 item.author,
                 item.authorAvatar,
@@ -44,11 +53,9 @@ class ArticlesFragment : BaseFragment<ArticlesViewModel>() {
                 item.poster,
                 item.title,
                 item.date
-        )
-
-        viewModel.navigate(NavigationCommand.To(action.actionId, action.arguments))
-    }) { id, isChecked ->
-        viewModel.handleToggleBookmark(id, isChecked)
+            )
+            viewModel.navigate(NavigationCommand.To(action.actionId, action.arguments))
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,15 +65,11 @@ class ArticlesFragment : BaseFragment<ArticlesViewModel>() {
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-
         val menuItem = menu.findItem(R.id.action_search)
-        val searchView = (menuItem?.actionView as SearchView)
-        searchView.queryHint = getString(R.string.article_search_placeholder)
-
+        val searchView = menuItem.actionView as SearchView
         if (binding.isSearch) {
             menuItem.expandActionView()
             searchView.setQuery(binding.searchQuery, false)
-            if (binding.isFocusedSearch) searchView.requestFocus() else searchView.clearFocus()
         }
 
         menuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
@@ -79,6 +82,7 @@ class ArticlesFragment : BaseFragment<ArticlesViewModel>() {
                 viewModel.handleSearchMode(false)
                 return true
             }
+
         })
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -94,19 +98,25 @@ class ArticlesFragment : BaseFragment<ArticlesViewModel>() {
         })
     }
 
+    override fun onDestroyView() {
+        toolbar.search_view?.setOnQueryTextListener(null)
+        super.onDestroyView()
+    }
+
+
     override fun setupViews() {
         with(rv_articles) {
             layoutManager = LinearLayoutManager(context)
             adapter = articlesAdapter
             addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         }
-        viewModel.observeList(viewLifecycleOwner) {
+
+        viewModel.observeList(viewLifecycleOwner, args.isBookmarks) {
             articlesAdapter.submitList(it)
         }
     }
 
     inner class ArticlesBinding : Binding() {
-        var isFocusedSearch = false
         var searchQuery: String? = null
         var isSearch: Boolean = false
         var isLoading: Boolean by RenderProp(true) {
@@ -119,19 +129,6 @@ class ArticlesFragment : BaseFragment<ArticlesViewModel>() {
             searchQuery = data.searchQuery
             isLoading = data.isLoading
         }
-
-        override fun saveUi(outState: Bundle) {
-            outState.putBoolean(::isLoading.name, isLoading)
-            outState.putBoolean(::isSearch.name, isSearch)
-            outState.putString(::searchQuery.name, searchQuery ?: "")
-            outState.putBoolean(::isFocusedSearch.name, search_view?.hasFocus() ?: false)
-        }
-
-        override fun restoreUi(savedState: Bundle?) {
-            isFocusedSearch = savedState?.getBoolean(::isFocusedSearch.name) ?: false
-            searchQuery = savedState?.getString(::searchQuery.name)
-            isSearch = savedState?.getBoolean(::isSearch.name) ?: false
-            isLoading = savedState?.getBoolean(::isLoading.name) ?: false
-        }
     }
+
 }

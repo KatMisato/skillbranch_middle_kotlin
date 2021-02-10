@@ -35,6 +35,7 @@ class HorizontalRuleSpan(
         bottom: Int,
         paint: Paint
     ) {
+
         paint.forLine {
             canvas.drawLine(
                 0f,
@@ -44,6 +45,7 @@ class HorizontalRuleSpan(
                 paint
             )
         }
+
     }
 
     private inline fun Paint.forLine(block: () -> Unit) {

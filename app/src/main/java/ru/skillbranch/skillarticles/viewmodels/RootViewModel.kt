@@ -18,11 +18,12 @@ class RootViewModel(handle: SavedStateHandle) : BaseViewModel<RootState>(handle,
     }
 
     override fun navigate(command: NavigationCommand) {
-        when (command) {
-            is NavigationCommand.To -> {
-                if (privateRoutes.contains(command.destination) && !currentState.isAuth) {
+        when(command){
+            is NavigationCommand.To ->{
+                if(privateRoutes.contains(command.destination) && !currentState.isAuth){
+                    //set requested destination as arg
                     super.navigate(NavigationCommand.StartLogin(command.destination))
-                } else {
+                }else{
                     super.navigate(command)
                 }
             }
@@ -32,5 +33,5 @@ class RootViewModel(handle: SavedStateHandle) : BaseViewModel<RootState>(handle,
 }
 
 data class RootState(
-        val isAuth: Boolean = false
+    val isAuth: Boolean = false
 ) : IViewModelState

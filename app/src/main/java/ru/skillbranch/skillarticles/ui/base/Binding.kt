@@ -14,7 +14,6 @@ abstract class Binding {
         if (!isInflated) {
             afterInflated?.invoke()
             isInflated = true
-            rebind()
         }
     }
 

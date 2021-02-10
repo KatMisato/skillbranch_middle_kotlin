@@ -4,32 +4,46 @@ import ru.skillbranch.skillarticles.data.local.PrefManager
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
+class PrefDelegate<T>(private val defaultValue: T) {
+    private var storedValue: T? = null
 
-class PrefDelegate<T>(private val defaultValue: T) : ReadWriteProperty<PrefManager, T?> {
-    private var curValue: T? = null
-
-    override fun getValue(thisRef: PrefManager, property: KProperty<*>): T? {
-        if (curValue == null) {
-            curValue = when (defaultValue) {
-                is Boolean -> thisRef.preferences.getBoolean(property.name, defaultValue) as T
-                is String -> thisRef.preferences.getString(property.name, defaultValue) as T
-                is Float -> thisRef.preferences.getFloat(property.name, defaultValue) as T
-                is Int -> thisRef.preferences.getInt(property.name, defaultValue) as T
-                is Long -> thisRef.preferences.getLong(property.name, defaultValue) as T
-                else -> null
+    operator fun provideDelegate(
+        thisRef: PrefManager,
+        prop: KProperty<*>
+    ): ReadWriteProperty<PrefManager, T?> {
+        val key = prop.name
+        return object : ReadWriteProperty<PrefManager, T?> {
+            override fun getValue(thisRef: PrefManager, property: KProperty<*>): T? {
+                if (storedValue == null) {
+                    @Suppress("UNCHECKED_CAST")
+                    storedValue = when(defaultValue) {
+                        is Int -> thisRef.preferences.getInt(key,defaultValue as Int) as T
+                        is Long -> thisRef.preferences.getLong(key,defaultValue as Long) as T
+                        is Float -> thisRef.preferences.getFloat(key,defaultValue as Float) as T
+                        is String -> thisRef.preferences.getString(key,defaultValue as String) as T
+                        is Boolean -> thisRef.preferences.getBoolean(key,defaultValue as Boolean) as T
+                        else -> error("This type can not be stored into Preferences")
+                    }
+                }
+                return storedValue
             }
+
+            override fun setValue(thisRef: PrefManager, property: KProperty<*>, value: T?) {
+                with(thisRef.preferences.edit()) {
+                    when (value) {
+                        is String -> putString(key, value)
+                        is Int -> putInt(key, value)
+                        is Boolean -> putBoolean(key, value)
+                        is Long -> putLong(key, value)
+                        is Float -> putFloat(key, value)
+                        else -> error("Only primitive types can be stored into Preferences")
+                    }
+                    apply()
+                }
+                storedValue = value
+            }
+
         }
-        return curValue
     }
 
-    override fun setValue(thisRef: PrefManager, property: KProperty<*>, value: T?) {
-        when (value) {
-            is Boolean -> thisRef.preferences.edit().putBoolean(property.name, value as Boolean).apply()
-            is String -> thisRef.preferences.edit().putString(property.name, value as String).apply()
-            is Float -> thisRef.preferences.edit().putFloat(property.name, value as Float).apply()
-            is Int -> thisRef.preferences.edit().putInt(property.name, value as Int).apply()
-            is Long -> thisRef.preferences.edit().putLong(property.name, value as Long).apply()
-        }
-        curValue = value
-    }
 }

@@ -37,7 +37,7 @@ class BookmarksFragment : BaseFragment<BookmarksViewModel>() {
         )
     }
 
-    private val bookmarksAdapter = ArticlesAdapter({ item ->
+    private val bookmarksAdapter = ArticlesAdapter({ item, isChecked ->
         val action = ArticlesFragmentDirections.actionNavArticlesToPageArticle(
                 item.id,
                 item.author,
