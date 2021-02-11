@@ -1,11 +1,13 @@
 <resources>
     <string name="app_name">Skill Articles</string>
     <string name="menu_title_search">Поиск</string>
+    <string name="menu_title_filter">Фильтр</string>
     <string name="article_search_placeholder">Search</string>
     <string name="title_articles">Articles</string>
     <string name="title_bookmarks">Bookmarks</string>
     <string name="title_transcriptions">Transcriptions</string>
     <string name="title_profile">Profile</string>
+    <string name="title_category">Choose Category</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

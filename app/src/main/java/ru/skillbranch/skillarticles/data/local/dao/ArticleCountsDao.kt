@@ -26,7 +26,7 @@ interface ArticleCountsDao : BaseDao<ArticleCounts> {
 
     @Query(
             """
-                UPDATE article_counts SET likes = likes + 1, update_at = CURRENT_TIMESTAMP
+                UPDATE article_counts SET likes = likes + 1, updated_at = CURRENT_TIMESTAMP
                 WHERE article_id = :articeId
             """
     )
@@ -34,7 +34,7 @@ interface ArticleCountsDao : BaseDao<ArticleCounts> {
 
     @Query(
             """
-                UPDATE article_counts SET likes = MAX(0, likes - 1), update_at = CURRENT_TIMESTAMP
+                UPDATE article_counts SET likes = MAX(0, likes - 1), updated_at = CURRENT_TIMESTAMP
                 WHERE article_id = :articeId
             """
     )
@@ -42,7 +42,7 @@ interface ArticleCountsDao : BaseDao<ArticleCounts> {
 
     @Query(
             """
-                UPDATE article_counts SET comments = comments + 1, update_at = CURRENT_TIMESTAMP
+                UPDATE article_counts SET comments = comments + 1, updated_at = CURRENT_TIMESTAMP
                 WHERE article_id = :articeId
             """
     )

@@ -1,5 +1,6 @@
 package ru.skillbranch.skillarticles.data.local.dao
 
+import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Update
@@ -12,8 +13,8 @@ interface BaseDao<T : Any> {
     fun insert(obj: T): Long
 
     @Update
-    fun update(list: List<T>): List<Long>
+    fun update(list: List<T>)
 
     @Update
-    fun update(obj: T): Long
+    fun update(obj: T)
 }

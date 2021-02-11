@@ -1,15 +1,12 @@
 package ru.skillbranch.skillarticles.data.local.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.RawQuery
-import androidx.room.Transaction
+import androidx.paging.DataSource
+import androidx.room.*
 import androidx.sqlite.db.SimpleSQLiteQuery
 import ru.skillbranch.skillarticles.data.local.entities.Article
 import ru.skillbranch.skillarticles.data.local.entities.ArticleFull
 import ru.skillbranch.skillarticles.data.local.entities.ArticleItem
-import javax.sql.DataSource
 
 @Dao
 interface ArticlesDao : BaseDao<Article> {
@@ -44,6 +41,7 @@ interface ArticlesDao : BaseDao<Article> {
     )
     fun findArticleItems(): List<ArticleItem>
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Query(
             """
                 SELECT * FROM ArticleItem
@@ -51,7 +49,7 @@ interface ArticlesDao : BaseDao<Article> {
                 WHERE refs.t_id = :tag
             """
     )
-    fun findArticlesByTagId(tag: String): Article
+    fun findArticlesByTagId(tag: String): List<ArticleItem>
 
     @RawQuery(observedEntities = [ArticleItem::class])
     fun findArticlesByRaw(simpleSQLiteQuery: SimpleSQLiteQuery): DataSource.Factory<Int, ArticleItem>

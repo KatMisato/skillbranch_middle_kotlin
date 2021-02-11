@@ -1,9 +1,7 @@
 package ru.skillbranch.skillarticles.data.local.entities
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
+import ru.skillbranch.skillarticles.data.local.DateConverter
 import java.util.*
 
 @Entity(tableName = "article_contents",
@@ -13,6 +11,7 @@ foreignKeys = [ForeignKey(
     childColumns = ["article_id"],
     onDelete = ForeignKey.CASCADE
 )])
+@TypeConverters(DateConverter::class)
 data class ArticleContent (
     @PrimaryKey
     @ColumnInfo(name = "article_id")

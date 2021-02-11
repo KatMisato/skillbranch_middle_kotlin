@@ -17,5 +17,5 @@ interface CategoriesDao : BaseDao<Category> {
                 ORDER BY articles_count DESC
             """
     )
-    fun findAllCategoriesData(tag: String): LiveData<List<CategoryData>>
+    fun findAllCategoriesData(): LiveData<List<CategoryData>>
 }

@@ -1,18 +1,17 @@
 package ru.skillbranch.skillarticles.data.local.dao
 
-import android.nfc.Tag
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import ru.skillbranch.skillarticles.data.local.entities.ArticleTagXRef
+import ru.skillbranch.skillarticles.data.local.entities.Tag
 
 @Dao
 interface TagsDao : BaseDao<Tag> {
     @Query("""
-                SELECT tag FROM article_tags
-                ORDER_BY use_count DESC
+                SELECT tag FROM article_tags ORDER BY use_count DESC              
             """)
     fun findTags(): LiveData<List<String>>
 
