@@ -34,7 +34,7 @@ object ArticlesRepository : IArticlesRepository {
     private var articleCountsDao = db.articleCountsDao()
     private var categoriesDao = db.categoriesDao()
     private var tagsDao = db.tagsDao()
-    private var articlePersonalDao = db.articlePersonalInfosDao()
+    private var articlePersonalDao = db.articlePersonalInfos()
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun setupTestDao(
@@ -107,7 +107,7 @@ class ArticleFilter(
     }
 }
 
-class QueryBuilder() {
+class QueryBuilder {
     private var table: String? = null
     private var selectColumns: String = "*"
     private var joinTables: String? = null
@@ -173,7 +173,7 @@ class ArticleDataSource(private val strategy: ArticleStrategy) :
     }
 }
 
-sealed class ArticleStrategy() {
+sealed class ArticleStrategy {
     abstract fun getItems(start: Int, size: Int): List<ArticleItemData>
 
     class AllArticles(

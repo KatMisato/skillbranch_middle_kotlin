@@ -1,8 +1,8 @@
 package ru.skillbranch.skillarticles.viewmodels.article
 
 import androidx.lifecycle.LiveData
+import ru.skillbranch.skillarticles.data.local.entities.ArticlePersonalInfo
 import ru.skillbranch.skillarticles.data.models.ArticleData
-import ru.skillbranch.skillarticles.data.models.ArticlePersonalInfo
 import ru.skillbranch.skillarticles.data.repositories.MarkdownElement
 
 interface IArticleViewModel {
@@ -11,11 +11,6 @@ interface IArticleViewModel {
      * (или базы данных если она сохранена, наличие статьи в базе не надо реализовывать в данном уроке)
      */
     fun getArticleContent(): LiveData<List<MarkdownElement>?>
-
-    /**
-     * Получение краткой информации о статье из базы данных
-     */
-    fun getArticleData(): LiveData<ArticleData?>
 
     /**
      * Получение пользовательской информации о статье из базы данных

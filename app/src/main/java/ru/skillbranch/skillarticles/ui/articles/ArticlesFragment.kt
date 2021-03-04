@@ -52,11 +52,11 @@ class ArticlesFragment : BaseFragment<ArticlesViewModel>() {
                         R.drawable.ic_search_black_24dp,
                         null
                 ) {
-                    val action = ArticlesFragmentDirections.actionToChooseCategory(
+                    val action = ArticlesFragmentDirections.chooseCategory(
                             binding.selectedCategories.toTypedArray(),
                             binding.categories.toTypedArray()
                     )
-                    viewModel.navigate(NavigationCommand.To(action.actiod.Id, action.arguments))
+                    viewModel.navigate(NavigationCommand.To(action.actionId, action.arguments))
                 }
         )
     }
@@ -87,7 +87,8 @@ class ArticlesFragment : BaseFragment<ArticlesViewModel>() {
                 context,
                 android.R.layout.simple_list_item_1,
                 null, //cursor
-                arrayOf("tag"), intArrayOf(android.R.id.text1),
+                arrayOf("tag"), // cursor column
+                intArrayOf(android.R.id.text1),
                 CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
         )
         suggestionsAdapter.setFilterQueryProvider { constraint -> populateAdapter(constraint) }

@@ -6,7 +6,6 @@ import ru.skillbranch.skillarticles.data.local.MarkdownConverter
 import ru.skillbranch.skillarticles.data.repositories.MarkdownElement
 import java.util.*
 
-@TypeConverters(DateConverter::class)
 @Entity(tableName = "articles")
 data class Article(
     @PrimaryKey()
@@ -43,7 +42,6 @@ data class Author(
         LEFT JOIN article_personal_infos AS personal ON personal.article_id = id
     """
 )
-@TypeConverters(DateConverter::class)
 data class ArticleItem(
     val id: String,
     val date: Date = Date(),
@@ -80,7 +78,7 @@ data class ArticleItem(
         LEFT JOIN article_personal_infos AS personal ON personal.article_id = id
     """
 )
-@TypeConverters(MarkdownConverter::class, DateConverter::class)
+@TypeConverters(MarkdownConverter::class)
 data class ArticleFull(
     val id: String,
     val title: String,

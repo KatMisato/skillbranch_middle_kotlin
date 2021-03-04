@@ -11,6 +11,7 @@ import kotlinx.android.synthetic.main.fragment_bookmarks.*
 import kotlinx.android.synthetic.main.search_view_layout.*
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.ui.articles.ArticlesAdapter
+import ru.skillbranch.skillarticles.ui.articles.ArticlesFragmentDirections
 import ru.skillbranch.skillarticles.ui.base.BaseFragment
 import ru.skillbranch.skillarticles.ui.base.Binding
 import ru.skillbranch.skillarticles.ui.base.MenuItemHolder
@@ -36,10 +37,10 @@ class BookmarksFragment : BaseFragment<BookmarksViewModel>() {
     }
 
     private val bookmarksAdapter = ArticlesAdapter({ item, isChecked ->
-        val action = ArticlesFragmentDirections.actionNavArticlesToPageArticle(
+        val action = ArticlesFragmentDirections.actionToPageArticle(
                 item.id,
                 item.author,
-                item.authorAvatar,
+                item.authorAvatar ?: "",
                 item.category,
                 item.categoryIcon,
                 item.poster,
@@ -48,9 +49,8 @@ class BookmarksFragment : BaseFragment<BookmarksViewModel>() {
         )
 
         viewModel.navigate(NavigationCommand.To(action.actionId, action.arguments))
-    }) { id, isChecked ->
-        viewModel.handleToggleBookmark(id, isChecked)
-    }
+        viewModel.handleToggleBookmark(item.id)
+    })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

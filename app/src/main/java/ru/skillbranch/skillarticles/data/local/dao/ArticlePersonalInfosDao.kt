@@ -1,5 +1,6 @@
 package ru.skillbranch.skillarticles.data.local.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
@@ -19,32 +20,40 @@ interface ArticlePersonalInfosDao : BaseDao<ArticlePersonalInfo> {
     @Query(
             """
                 UPDATE article_personal_infos SET is_like = NOT is_like, updated_at = CURRENT_TIMESTAMP
-                WHERE article_id = :articeId
+                WHERE article_id = :articleId
             """
     )
-    fun toggleLike(articeId: String): Int
+    fun toggleLike(articleId: String): Int
 
 
     @Query(
             """
                 UPDATE article_personal_infos SET is_bookmark = NOT is_bookmark, updated_at = CURRENT_TIMESTAMP
-                WHERE article_id = :articeId
+                WHERE article_id = :articleId
             """
     )
-    fun toggleBookmark(articeId: String): Int
+    fun toggleBookmark(articleId: String): Int
 
     @Query(
             """
                 UPDATE article_personal_infos SET is_bookmark = NOT is_bookmark, updated_at = CURRENT_TIMESTAMP
-                WHERE article_id = :articeId
+                WHERE article_id = :articleId
             """
     )
 
-    fun toggleLikeOrInsert(articeId: String) {
-        if (toggleLike(articeId) == 0) insert(ArticlePersonalInfo(articleId = articeId, isBookmark = true))
+    fun toggleLikeOrInsert(articleId: String) {
+        if (toggleLike(articleId) == 0) insert(ArticlePersonalInfo(articleId = articleId, isBookmark = true))
     }
 
-    fun toggleBookmarkOrInsert(articeId: String) {
-        if (toggleBookmark(articeId) == 0) insert(ArticlePersonalInfo(articleId = articeId, isBookmark = true))
+    fun toggleBookmarkOrInsert(articleId: String) {
+        if (toggleBookmark(articleId) == 0) insert(ArticlePersonalInfo(articleId = articleId, isBookmark = true))
     }
+
+    @Query(
+            """
+                SELECT * FROM article_personal_infos
+                WHERE article_id = :articleId
+            """
+    )
+    fun findPersonalInfos(articleId: String): LiveData<ArticlePersonalInfo?>
 }

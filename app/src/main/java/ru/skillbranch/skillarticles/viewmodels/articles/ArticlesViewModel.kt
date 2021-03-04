@@ -129,9 +129,9 @@ class ArticlesViewModel(handle: SavedStateHandle) :
         updateState { it.copy(isSearch = isSearch) }
     }
 
-    fun handleToggleBookmark(aricleId: String) {
+    fun handleToggleBookmark(articleId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.toggleBookmark(aricleId)
+            repository.toggleBookmark(articleId)
         }
     }
 

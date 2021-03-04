@@ -10,23 +10,23 @@ import ru.skillbranch.skillarticles.viewmodels.articles.ArticlesViewModel
 
 class ChoseCategoryDialog : DialogFragment() {
     private val viewModel: ArticlesViewModel by activityViewModels()
-    private val selectedCategoies = mutableListOf<String>()
-    private val args: ChooseCategoryDialogArgs by navArgs()
+    private val selectedCategories = mutableListOf<String>()
+    private val args: ChoseCategoryDialogArgs by navArgs()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         // TODO save checked state and implement custom items
-        val categories = args.categories.toList().map { "${id.title} (${it.articlesCount})" }.toTypedArray()
+        val categories = args.categories.toList().map { "${it.title} (${it.articlesCount})" }.toTypedArray()
         val checked = BooleanArray(args.categories.size) {
             args.selectedCategories.contains(args.categories[it].categoryId)
         }
 
         val adb = AlertDialog.Builder(requireContext())
                 .setTitle("Choose caregory")
-                .setPositiveButton("Apply") { _, _ -> viewModel.applyCategories(selectedCategoies) }
+                .setPositiveButton("Apply") { _, _ -> viewModel.applyCategories(selectedCategories) }
                 .setNegativeButton("Reset") { _, _ -> viewModel.applyCategories(emptyList()) }
                 .setMultiChoiceItems(categories, checked) { dialog, which, isChecked ->
-                    if (isChecked) selectedCategoies.add(args.categories[which].categoryId)
-                    else selectedCategoies.remove(args.categories[which].categoryId)
+                    if (isChecked) selectedCategories.add(args.categories[which].categoryId)
+                    else selectedCategories.remove(args.categories[which].categoryId)
                 }
         return adb.create()
     }

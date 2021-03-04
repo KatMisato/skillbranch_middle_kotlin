@@ -1,19 +1,16 @@
 package ru.skillbranch.skillarticles.viewmodels.bookmarks
 
 import androidx.lifecycle.*
+import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import ru.skillbranch.skillarticles.data.local.entities.ArticleItem
 import ru.skillbranch.skillarticles.data.models.ArticleItemData
-import ru.skillbranch.skillarticles.data.repositories.ArticleStrategy
+import ru.skillbranch.skillarticles.data.repositories.ArticleFilter
 import ru.skillbranch.skillarticles.data.repositories.ArticlesDataFactory
 import ru.skillbranch.skillarticles.data.repositories.ArticlesRepository
-import ru.skillbranch.skillarticles.viewmodels.articles.ArticlesBoundaryCallback
 import ru.skillbranch.skillarticles.viewmodels.base.BaseViewModel
 import ru.skillbranch.skillarticles.viewmodels.base.IViewModelState
-import ru.skillbranch.skillarticles.viewmodels.base.Notify
 import java.util.concurrent.Executors
 
 class BookmarksViewModel(handle: SavedStateHandle) : BaseViewModel<BookmarksState>(handle, BookmarksState()) {
@@ -28,21 +25,22 @@ class BookmarksViewModel(handle: SavedStateHandle) : BaseViewModel<BookmarksStat
     }
 
     private val listData = Transformations.switchMap(state) {
-        when {
-            it.isSearch && !it.searchQuery.isNullOrBlank() -> buildPagedList(
-                    repository.searchBookmarks(it.searchQuery)
-            )
-            else -> buildPagedList(repository.allBookmarks())
-        }
+        val filter = it.toArticleFilter()
+        return@switchMap buildPagedList(repository.rawQueryArticles(filter))
     }
 
     fun observeList(owner: LifecycleOwner,
-                    onChange: (list: PagedList<ArticleItemData>) -> Unit) {
+                    onChange: (list: PagedList<ArticleItem>) -> Unit) {
         listData.observe(owner, Observer { onChange(it) })
     }
 
-    private fun buildPagedList(dataFactory: ArticlesDataFactory): LiveData<PagedList<ArticleItemData>> {
-        val builder = LivePagedListBuilder<Int, ArticleItemData>(dataFactory, listConfig)
+    private fun buildPagedList(
+            dataFactory: DataSource.Factory<Int, ArticleItem>
+    ): LiveData<PagedList<ArticleItem>> {
+        val builder = LivePagedListBuilder<Int, ArticleItem>(
+                dataFactory,
+                listConfig
+        )
         return builder.setFetchExecutor(Executors.newSingleThreadExecutor()).build()
     }
 
@@ -55,8 +53,8 @@ class BookmarksViewModel(handle: SavedStateHandle) : BaseViewModel<BookmarksStat
         updateState { it.copy(isSearch = isSearch) }
     }
 
-    fun handleToggleBookmark(id: String, isChecked: Boolean) {
-        repository.updateBookmark(id, isChecked)
+    fun handleToggleBookmark(id: String) {
+        repository.toggleBookmark(id)
         listData.value?.dataSource?.invalidate()
     }
 }
@@ -65,3 +63,8 @@ data class BookmarksState(val isSearch: Boolean = false,
                          val searchQuery: String? = null,
                          val isLoading: Boolean = true
 ) : IViewModelState
+
+private fun BookmarksState.toArticleFilter(): ArticleFilter = ArticleFilter(
+        search = searchQuery,
+        isBookmark = true
+)

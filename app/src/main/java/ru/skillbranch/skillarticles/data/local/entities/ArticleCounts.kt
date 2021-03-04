@@ -13,7 +13,6 @@ import java.util.*
         onDelete = ForeignKey.CASCADE
     )]
 )
-@TypeConverters(DateConverter::class)
 data class ArticleCounts(
     @PrimaryKey
     @ColumnInfo(name = "article_id")

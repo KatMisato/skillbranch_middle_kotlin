@@ -7,8 +7,7 @@ import androidx.paging.PagedList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ru.skillbranch.skillarticles.data.models.ArticleData
-import ru.skillbranch.skillarticles.data.models.ArticlePersonalInfo
+import ru.skillbranch.skillarticles.data.local.entities.ArticlePersonalInfo
 import ru.skillbranch.skillarticles.data.models.CommentItemData
 import ru.skillbranch.skillarticles.data.repositories.ArticleRepository
 import ru.skillbranch.skillarticles.data.repositories.CommentsDataFactory
@@ -38,8 +37,8 @@ class ArticleViewModel(
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     val listData: LiveData<PagedList<CommentItemData>> =
-            Transformations.switchMap(getArticleData()) {
-                buildPagedList(repository.loadAllComments(articleId, it?.commentCount ?: 0))
+            Transformations.switchMap(repository.fetchArticleCommentCount(articleId)) {
+                buildPagedList(repository.loadAllComments(articleId, it))
             }
 
     init {
@@ -81,12 +80,8 @@ class ArticleViewModel(
         TODO("Not yet implemented")
     }
 
-    override fun getArticleData(): LiveData<ArticleData?> {
-        TODO("Not yet implemented")
-    }
-
     override fun getArticlePersonalInfo(): LiveData<ArticlePersonalInfo?> {
-        TODO("Not yet implemented")
+        return repository.getArticlePersonalInfo(articleId)
     }
 
     //app settings

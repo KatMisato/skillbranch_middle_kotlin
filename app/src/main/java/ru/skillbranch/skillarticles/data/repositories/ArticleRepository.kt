@@ -36,7 +36,7 @@ object ArticleRepository : IArticleRepository {
     private val preferences = PrefManager
 
     private var articlesDao = db.articlesDao()
-    private var articlePersonalDao = db.articlePersonalInfosDao()
+    private var articlePersonalDao = db.articlePersonalInfos()
     private var articleCountsDao = db.articleCountsDao()
     private var articleContentDao = db.articleContentsDao()
 
@@ -45,12 +45,12 @@ object ArticleRepository : IArticleRepository {
             articlesDao: ArticlesDao,
             articlePersonalDao: ArticlePersonalInfosDao,
             articleCountsDao: ArticleCountsDao,
-            articleContentsDao: ArticleContentsDao
+            articleContentDao: ArticleContentsDao
     ) {
         this.articlesDao = articlesDao
         this.articlePersonalDao = articlePersonalDao
         this.articleCountsDao = articleCountsDao
-        this.articleContentDao = articleContentsDao
+        this.articleContentDao = articleContentDao
     }
 
     override fun findArticle(articleId: String): LiveData<ArticleFull> = articlesDao.findFullArticle(articleId)
@@ -118,6 +118,8 @@ object ArticleRepository : IArticleRepository {
         )
         articleCountsDao.incrementCommentsCount(articleId)
     }
+
+    fun getArticlePersonalInfo(articleId: String) = articlePersonalDao.findPersonalInfos(articleId)
 }
 
 class CommentsDataFactory(

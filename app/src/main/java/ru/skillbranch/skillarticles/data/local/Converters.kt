@@ -10,7 +10,7 @@ class DateConverter {
     fun timestampToDate(timestamp: Long): Date = Date(timestamp)
 
     @TypeConverter
-    fun dateTotimestamp(date: Date): Long = date.time
+    fun dateToTimestamp(date: Date): Long = date.time
 }
 
 class MarkdownConverter {
