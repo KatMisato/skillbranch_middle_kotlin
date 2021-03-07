@@ -28,7 +28,7 @@ interface IArticleRepository {
     fun decrementLike(articleId: String)
     fun updateSettings(copy: AppSettings)
     fun fetchArticleContent(articleId: String)
-    fun fetchArticleCommentCount(articleId: String): LiveData<Int>
+    fun findArticleCommentCount(articleId: String): LiveData<Int>
 }
 
 object ArticleRepository : IArticleRepository {
@@ -70,7 +70,7 @@ object ArticleRepository : IArticleRepository {
         articleContentDao.insert(content.toArticleContent())
     }
 
-    override fun fetchArticleCommentCount(articleId: String): LiveData<Int> = articleCountsDao.getCommentsCount(articleId)
+    override fun findArticleCommentCount(articleId: String): LiveData<Int> = articleCountsDao.getCommentsCount(articleId)
 
     override fun isAuth(): MutableLiveData<Boolean> = preferences.isAuth()
 

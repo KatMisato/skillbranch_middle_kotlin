@@ -27,32 +27,32 @@ interface ArticleCountsDao : BaseDao<ArticleCounts> {
     @Query(
             """
                 UPDATE article_counts SET likes = likes + 1, updated_at = CURRENT_TIMESTAMP
-                WHERE article_id = :articeId
+                WHERE article_id = :articleId
             """
     )
-    fun incrementLike(articeId: String): Int
+    fun incrementLike(articleId: String): Int
 
     @Query(
             """
                 UPDATE article_counts SET likes = MAX(0, likes - 1), updated_at = CURRENT_TIMESTAMP
-                WHERE article_id = :articeId
+                WHERE article_id = :articleId
             """
     )
-    fun decrementLike(articeId: String): Int
+    fun decrementLike(articleId: String): Int
 
     @Query(
             """
                 UPDATE article_counts SET comments = comments + 1, updated_at = CURRENT_TIMESTAMP
-                WHERE article_id = :articeId
+                WHERE article_id = :articleId
             """
     )
-    fun incrementCommentsCount(articeId: String): Int
+    fun incrementCommentsCount(articleId: String): Int
 
     @Query(
             """
                 SELECT comments FROM article_counts
-                WHERE article_id = :articeId
+                WHERE article_id = :articleId
             """
     )
-    fun getCommentsCount(articeId: String): LiveData<Int>
+    fun getCommentsCount(articleId: String): LiveData<Int>
 }

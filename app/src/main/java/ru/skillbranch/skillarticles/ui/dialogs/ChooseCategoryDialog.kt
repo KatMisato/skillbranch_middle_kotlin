@@ -8,10 +8,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import ru.skillbranch.skillarticles.viewmodels.articles.ArticlesViewModel
 
-class ChoseCategoryDialog : DialogFragment() {
+class ChooseCategoryDialog : DialogFragment() {
     private val viewModel: ArticlesViewModel by activityViewModels()
     private val selectedCategories = mutableListOf<String>()
-    private val args: ChoseCategoryDialogArgs by navArgs()
+    private val args: ChooseCategoryDialogArgs by navArgs()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         // TODO save checked state and implement custom items

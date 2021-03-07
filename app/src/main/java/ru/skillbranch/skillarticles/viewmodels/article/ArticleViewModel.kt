@@ -37,7 +37,7 @@ class ArticleViewModel(
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     val listData: LiveData<PagedList<CommentItemData>> =
-            Transformations.switchMap(repository.fetchArticleCommentCount(articleId)) {
+            Transformations.switchMap(repository.findArticleCommentCount(articleId)) {
                 buildPagedList(repository.loadAllComments(articleId, it))
             }
 
