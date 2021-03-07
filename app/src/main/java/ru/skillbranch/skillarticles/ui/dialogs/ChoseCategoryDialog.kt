@@ -8,7 +8,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import ru.skillbranch.skillarticles.viewmodels.articles.ArticlesViewModel
 
-class ChooseCategoryDialog : DialogFragment() {
+class ChoseCategoryDialog : DialogFragment() {
     private val viewModel: ArticlesViewModel by activityViewModels()
     private val selectedCategories = mutableListOf<String>()
     private val args: ChooseCategoryDialogArgs by navArgs()
