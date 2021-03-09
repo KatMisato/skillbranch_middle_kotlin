@@ -21,7 +21,7 @@ class ChoseCategoryDialog : DialogFragment() {
         }
 
         val adb = AlertDialog.Builder(requireContext())
-                .setTitle("Choose caregory")
+                .setTitle("Choose category")
                 .setPositiveButton("Apply") { _, _ -> viewModel.applyCategories(selectedCategories) }
                 .setNegativeButton("Reset") { _, _ -> viewModel.applyCategories(emptyList()) }
                 .setMultiChoiceItems(categories, checked) { dialog, which, isChecked ->
