@@ -5,10 +5,12 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
@@ -29,12 +31,14 @@ import kotlinx.android.synthetic.main.layout_bottombar.view.*
 import kotlinx.android.synthetic.main.layout_submenu.view.*
 import kotlinx.android.synthetic.main.search_view_layout.view.*
 import ru.skillbranch.skillarticles.R
+import ru.skillbranch.skillarticles.data.repositories.Element
 import ru.skillbranch.skillarticles.data.repositories.MarkdownElement
 import ru.skillbranch.skillarticles.extensions.*
 import ru.skillbranch.skillarticles.ui.base.*
 import ru.skillbranch.skillarticles.ui.custom.ArticleSubmenu
 import ru.skillbranch.skillarticles.ui.custom.Bottombar
 import ru.skillbranch.skillarticles.ui.custom.ShimmerDrawable
+import ru.skillbranch.skillarticles.ui.custom.markdown.MarkdownBuilder
 import ru.skillbranch.skillarticles.ui.delegates.RenderProp
 import ru.skillbranch.skillarticles.viewmodels.article.ArticleState
 import ru.skillbranch.skillarticles.viewmodels.article.ArticleViewModel
@@ -196,8 +200,6 @@ class ArticleFragment : BaseFragment<ArticleViewModel>(), IArticleView {
         wrap_comments.setEndIconOnClickListener { view ->
             view.context.hideKeyboard(view)
             viewModel.handleClearComment()
-//            et_comment.text = null
-//            et_comment.clearFocus()
         }
 
         with(rv_comments) {
@@ -309,6 +311,7 @@ class ArticleFragment : BaseFragment<ArticleViewModel>(), IArticleView {
     inner class ArticleBinding : Binding() {
         var isFocusedSearch: Boolean = false
         var searchQuery: String? = null
+        private val markdownBuilder = MarkdownBuilder(requireContext())
 
         private var isLoadingContent by RenderProp(false) {
             Log.e("ArticleFragment", "content is loading: $it");
@@ -365,6 +368,34 @@ class ArticleFragment : BaseFragment<ArticleViewModel>(), IArticleView {
             tv_text_content.setContent(it)
         }
 
+        private var tags: List<String> by RenderProp(emptyList()) {
+            tv_hashtags.isVisible = it.isNotEmpty()
+            if (it.isEmpty()) return@RenderProp
+
+            markdownBuilder
+                    .markdownToSpan(
+                            MarkdownElement.Text(
+                                    it.flatMap { tag ->
+                                        listOf(Element.InlineCode(tag), Element.Text(" "))
+                                    }.toMutableList()
+                            )
+                    )
+                    .run { tv_hashtags.setText(this, TextView.BufferType.SPANNABLE) }
+        }
+
+        private var source: String by RenderProp("") {
+            tv_source.isVisible = it.isNotEmpty()
+            if (it.isEmpty()) return@RenderProp
+
+            markdownBuilder
+                    .markdownToSpan(
+                            MarkdownElement.Text(
+                                    mutableListOf(Element.Link(it, "Article source"))
+                            )
+                    )
+                    .run { tv_source.setText(this, TextView.BufferType.SPANNABLE) }
+        }
+
         private var answerTo by RenderProp("Comment") { wrap_comments.hint = it }
         private var isShowBottombar by RenderProp(true) {
             if (it) bottombar.show() else bottombar.hide()
@@ -403,6 +434,8 @@ class ArticleFragment : BaseFragment<ArticleViewModel>(), IArticleView {
             isBigText = data.isBigText
             isDarkMode = data.isDarkMode
             content = data.content
+            source = data.source ?: ""
+            tags = data.tags
 
             isLoadingContent = data.isLoadingContent
             isSearch = data.isSearch
