@@ -11,14 +11,13 @@ import android.widget.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import kotlinx.android.synthetic.main.dialog_chose_category.view.*
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.data.local.entities.CategoryData
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
 import ru.skillbranch.skillarticles.viewmodels.articles.ArticlesViewModel
-
 
 private const val SELECTED_CATEGORIES = "SELECTED_CATEGORIES"
 
@@ -38,7 +37,6 @@ class ChoseCategoryDialog : DialogFragment() {
         }
 
         val categoryAdapter = CategoryAdapter(
-                requireContext(),
                 categoryItems
         ) { view ->
             val box = view.findViewById<CheckBox>(R.id.ch_select)
@@ -48,7 +46,7 @@ class ChoseCategoryDialog : DialogFragment() {
         }
 
         val convertView = layoutInflater.inflate(R.layout.dialog_chose_category, null)
-        val categoriesList = convertView.findViewById(R.id.categories_list) as ListView
+        val categoriesList = convertView.findViewById(R.id.categories_list) as RecyclerView
         categoriesList.adapter = categoryAdapter
         val adb = AlertDialog.Builder(requireContext())
                 .setTitle("Choose category")
@@ -68,38 +66,50 @@ private fun CategoryData.toCategoryItem(checked: Boolean): CategoryItem = Catego
 data class CategoryItem(val checked: Boolean, val icon: String, val title: String, val count: String)
 
 class CategoryAdapter(
-        private val cxt: Context,
         private val items: List<CategoryItem>,
         private val listener: (view: View) -> Unit
-) : ArrayAdapter<CategoryItem>(cxt, 0, items) {
+) : RecyclerView.Adapter<CategoryVH>() {
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = convertView ?: LayoutInflater.from(cxt)
-                .inflate(R.layout.item_dialog_chose_category, parent, false)
-        with(view) {
+    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): CategoryVH {
+        val view = LayoutInflater.from(viewGroup.context)
+                .inflate(R.layout.item_dialog_chose_category, viewGroup, false)
+        return CategoryVH(view)
+    }
+
+    override fun onBindViewHolder(holder: CategoryVH, position: Int) {
+        holder.bind(items[position], position, listener)
+    }
+
+    override fun getItemCount() = items.size
+}
+
+class CategoryVH(private val containerView: View) : RecyclerView.ViewHolder(containerView) {
+    private val chSelect: CheckBox = containerView.findViewById(R.id.ch_select)
+    private val tvTitle: TextView = containerView.findViewById(R.id.tv_category)
+    private val tvCount: TextView = containerView.findViewById(R.id.tv_count)
+    private val iconView: ImageView = containerView.findViewById(R.id.iv_icon)
+
+    fun bind(item: CategoryItem?,
+             position: Int,
+             listener: (view: View) -> Unit) {
+
+        with(containerView) {
             setOnClickListener(listener)
             tag = position
         }
 
-        val data = getItem(position) ?: return view
-
-        with(view.findViewById<CheckBox>(R.id.ch_select)) {
+        with(chSelect) {
             isClickable = false
-            isChecked = data.checked
+            isChecked = item?.checked == true
         }
 
-        val iconView = view.findViewById<ImageView>(R.id.iv_icon)
-        Glide.with(cxt)
-                .load(data.icon)
+        Glide.with(containerView.context)
+                .load(item?.icon)
                 .apply(RequestOptions.circleCropTransform())
-                .override(cxt.dpToIntPx(40))
+                .override(containerView.context.dpToIntPx(40))
                 .into(iconView)
 
-        view.findViewById<TextView>(R.id.tv_category).text = data.title
-        view.findViewById<TextView>(R.id.tv_count).text = data.count
-
-        return view
+        tvTitle.text = item?.title
+        tvCount.text = item?.count
     }
-
-    override fun getCount() = items.size
 }
