@@ -7,19 +7,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.CheckBox
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import kotlinx.android.synthetic.main.dialog_chose_category.view.*
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.data.local.entities.CategoryData
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
 import ru.skillbranch.skillarticles.viewmodels.articles.ArticlesViewModel
+
 
 private const val SELECTED_CATEGORIES = "SELECTED_CATEGORIES"
 
@@ -48,9 +47,12 @@ class ChoseCategoryDialog : DialogFragment() {
             box.isChecked = !box.isChecked
         }
 
+        val convertView = layoutInflater.inflate(R.layout.dialog_chose_category, null)
+        val categoriesList = convertView.findViewById(R.id.categories_list) as ListView
+        categoriesList.adapter = categoryAdapter
         val adb = AlertDialog.Builder(requireContext())
                 .setTitle("Choose category")
-                .setAdapter(categoryAdapter, null)
+                .setView(convertView)
                 .setPositiveButton("Apply") { _, _ -> viewModel.applyCategories(selectedCategories) }
                 .setNegativeButton("Reset") { _, _ -> viewModel.applyCategories(emptyList()) }
         return adb.create()
