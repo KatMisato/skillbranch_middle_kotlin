@@ -82,7 +82,7 @@ class ArticleViewModel(
         TODO("Not yet implemented")
     }
 
-    override fun getArticlePersonalInfo(): LiveData<ArticlePersonalInfo?> {
+    override fun getArticlePersonalInfo(): LiveData<ArticlePersonalInfo> {
         return repository.getArticlePersonalInfo(articleId)
     }
 

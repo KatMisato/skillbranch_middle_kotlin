@@ -14,7 +14,7 @@ interface IArticleViewModel {
     /**
      * Получение пользовательской информации о статье из базы данных
      */
-    fun getArticlePersonalInfo(): LiveData<ArticlePersonalInfo?>
+    fun getArticlePersonalInfo(): LiveData<ArticlePersonalInfo>
 
     /**
      * Получение настроек приложения

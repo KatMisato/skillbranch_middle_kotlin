@@ -55,7 +55,7 @@ interface ArticlePersonalInfosDao : BaseDao<ArticlePersonalInfo> {
                 WHERE article_id = :articleId
             """
     )
-    fun findPersonalInfos(articleId: String): LiveData<ArticlePersonalInfo?>
+    fun findPersonalInfos(articleId: String): LiveData<ArticlePersonalInfo>
 
     @Query(
             """
