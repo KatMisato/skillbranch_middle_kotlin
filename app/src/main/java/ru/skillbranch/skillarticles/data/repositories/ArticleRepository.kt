@@ -62,7 +62,8 @@ object ArticleRepository : IArticleRepository {
     override fun toggleBookmark(articleId: String) = articlePersonalDao.toggleBookmarkOrInsert(articleId)
 
     override fun updateSettings(copy: AppSettings) {
-        // TODO: implement
+        preferences.isDarkMode = copy.isDarkMode
+        preferences.isBigText = copy.isBigText
     }
 
     override fun fetchArticleContent(articleId: String) {
