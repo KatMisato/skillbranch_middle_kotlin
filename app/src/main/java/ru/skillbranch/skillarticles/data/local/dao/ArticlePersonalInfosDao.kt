@@ -36,7 +36,7 @@ interface ArticlePersonalInfosDao : BaseDao<ArticlePersonalInfo> {
 
     @Query(
             """
-                UPDATE article_personal_infos SET is_bookmark = NOT is_bookmark, updated_at = CURRENT_TIMESTAMP
+                UPDATE article_personal_infos SET is_like = NOT is_like, updated_at = CURRENT_TIMESTAMP
                 WHERE article_id = :articleId
             """
     )
